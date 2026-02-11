@@ -27,6 +27,7 @@ import Foundation
 import XCTest
 import KeychainAccess
 
+@MainActor
 class KeychainAccessTests: XCTestCase {
     override func setUp() {
         super.setUp()
@@ -832,13 +833,7 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
                 #if os(iOS)
-                if #available(iOS 11.3, *) {
-                    XCTAssertNotNil(attributes?.accessControl)
-                } else if #available(iOS 9.0, *) {
-                    XCTAssertNil(attributes?.accessControl)
-                } else {
-                    XCTAssertNotNil(attributes?.accessControl)
-                }
+                XCTAssertNotNil(attributes?.accessControl)
                 #else
                 if #available(tvOS 11.3, *) {
                     XCTAssertNotNil(attributes?.accessControl)
@@ -890,13 +885,7 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
                 #if os(iOS)
-                if #available(iOS 11.3, *) {
-                    XCTAssertNotNil(attributes?.accessControl)
-                } else if #available(iOS 9.0, *) {
-                    XCTAssertNil(attributes?.accessControl)
-                } else {
-                    XCTAssertNotNil(attributes?.accessControl)
-                }
+                XCTAssertNotNil(attributes?.accessControl)
                 #else
                 if #available(tvOS 11.3, *) {
                     XCTAssertNotNil(attributes?.accessControl)
@@ -949,13 +938,7 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
                 #if os(iOS)
-                if #available(iOS 11.3, *) {
-                    XCTAssertNotNil(attributes?.accessControl)
-                } else if #available(iOS 9.0, *) {
-                    XCTAssertNil(attributes?.accessControl)
-                } else {
-                    XCTAssertNotNil(attributes?.accessControl)
-                }
+                XCTAssertNotNil(attributes?.accessControl)
                 #else
                 if #available(tvOS 11.3, *) {
                     XCTAssertNotNil(attributes?.accessControl)
@@ -1332,7 +1315,6 @@ class KeychainAccessTests: XCTestCase {
         XCTAssertEqual(keychain.label("Label").label, "Label")
         XCTAssertNil(keychain.comment)
         XCTAssertEqual(keychain.comment("Comment").comment, "Comment")
-        XCTAssertEqual(keychain.authenticationPrompt("Prompt").authenticationPrompt, "Prompt")
     }
 
     // MARK:
@@ -1470,21 +1452,11 @@ class KeychainAccessTests: XCTestCase {
             #if !targetEnvironment(macCatalyst)
             try! keychain
                 .synchronizable(false)
-                .accessibility(.alwaysThisDeviceOnly)
-                .set("google.com_value1", key: "google.com_key1")
-            #else
-            try! keychain
-                .synchronizable(false)
                 .accessibility(.afterFirstUnlockThisDeviceOnly)
                 .set("google.com_value1", key: "google.com_key1")
             #endif
 
             #if !targetEnvironment(macCatalyst)
-            try! keychain
-                .synchronizable(true)
-                .accessibility(.always)
-                .set("google.com_value2", key: "google.com_key2")
-            #else
             try! keychain
                 .synchronizable(true)
                 .accessibility(.afterFirstUnlock)
@@ -1512,11 +1484,7 @@ class KeychainAccessTests: XCTestCase {
             XCTAssertEqual(sortedItems[0]["class"] as? String, "InternetPassword")
             XCTAssertEqual(sortedItems[0]["authenticationType"] as? String, "Default")
             XCTAssertEqual(sortedItems[0]["protocol"] as? String, "HTTPS")
-            #if targetEnvironment(macCatalyst)
             XCTAssertEqual(sortedItems[0]["accessibility"] as? String, "AfterFirstUnlockThisDeviceOnly")
-            #else
-            XCTAssertEqual(sortedItems[0]["accessibility"] as? String, "AlwaysThisDeviceOnly")
-            #endif
             XCTAssertEqual(sortedItems[1]["synchronizable"] as? String, "true")
             XCTAssertEqual(sortedItems[1]["value"] as? String, "google.com_value2")
             XCTAssertEqual(sortedItems[1]["key"] as? String, "google.com_key2")
@@ -1524,11 +1492,7 @@ class KeychainAccessTests: XCTestCase {
             XCTAssertEqual(sortedItems[1]["class"] as? String, "InternetPassword")
             XCTAssertEqual(sortedItems[1]["authenticationType"] as? String, "Default")
             XCTAssertEqual(sortedItems[1]["protocol"] as? String, "HTTPS")
-            #if targetEnvironment(macCatalyst)
             XCTAssertEqual(sortedItems[1]["accessibility"] as? String, "AfterFirstUnlock")
-            #else
-            XCTAssertEqual(sortedItems[1]["accessibility"] as? String, "Always")
-            #endif
             #else
             XCTAssertEqual(sortedItems[0]["key"] as? String, "google.com_key1")
             XCTAssertEqual(sortedItems[0]["server"] as? String, "google.com")
@@ -1678,7 +1642,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDAny]
+          let policy: AuthenticationPolicy = [.biometryAny]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1690,7 +1654,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDAny, .devicePasscode]
+            let policy: AuthenticationPolicy = [.biometryAny, .devicePasscode]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1702,7 +1666,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDAny, .applicationPassword]
+            let policy: AuthenticationPolicy = [.biometryAny, .applicationPassword]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1714,7 +1678,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDAny, .applicationPassword, .privateKeyUsage]
+            let policy: AuthenticationPolicy = [.biometryAny, .applicationPassword, .privateKeyUsage]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1726,7 +1690,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDCurrentSet]
+            let policy: AuthenticationPolicy = [.biometryCurrentSet]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1738,7 +1702,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDCurrentSet, .devicePasscode]
+            let policy: AuthenticationPolicy = [.biometryCurrentSet, .devicePasscode]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1750,7 +1714,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDCurrentSet, .applicationPassword]
+            let policy: AuthenticationPolicy = [.biometryCurrentSet, .applicationPassword]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1762,7 +1726,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDCurrentSet, .applicationPassword, .privateKeyUsage]
+            let policy: AuthenticationPolicy = [.biometryCurrentSet, .applicationPassword, .privateKeyUsage]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1774,7 +1738,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDAny, .or, .devicePasscode]
+            let policy: AuthenticationPolicy = [.biometryAny, .or, .devicePasscode]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
@@ -1786,7 +1750,7 @@ class KeychainAccessTests: XCTestCase {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
-            let policy: AuthenticationPolicy = [.touchIDAny, .and, .devicePasscode]
+            let policy: AuthenticationPolicy = [.biometryAny, .and, .devicePasscode]
             let flags = SecAccessControlCreateFlags(rawValue: policy.rawValue)
 
             var error: Unmanaged<CFError>?
