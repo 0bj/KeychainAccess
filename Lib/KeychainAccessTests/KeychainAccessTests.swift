@@ -471,6 +471,8 @@ class KeychainAccessTests: XCTestCase {
         let keychain = Keychain(service: "com.example.github-token")
         XCTAssertEqual(keychain.service, "com.example.github-token")
         XCTAssertNil(keychain.accessGroup)
+        XCTAssertNil(keychain.server)
+        XCTAssertNil(keychain.protocolType)
     }
 
     func testInitializerWithAccessGroup() {

@@ -489,6 +489,8 @@ OSStatus error:[-34018] Internal error when a required entitlement isn't present
 Swift 6, Xcode 26 or later.
 
 > Since v5.0.0 Shared Web Credentials API (`getSharedPassword`, `setSharedPassword`, `removeSharedPassword`, `requestSharedWebCredential`, `generatePassword`) has been removed. Use `ASAuthorizationController` with `ASAuthorizationPasswordRequest` (AuthenticationServices) instead.
+>
+> `Keychain.server` and `Keychain.protocolType` are optional since v5.0.0: they are `nil` for a generic password keychain instead of crashing on access.
 
 ## Installation
 

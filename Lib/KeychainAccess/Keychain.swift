@@ -300,11 +300,13 @@ public final class Keychain: @unchecked Sendable {
     return options.accessGroup
   }
 
-  public var server: URL {
+  /// The server URL of an internet password keychain, `nil` for a generic password keychain.
+  public var server: URL? {
     return options.server
   }
 
-  public var protocolType: ProtocolType {
+  /// The protocol of an internet password keychain, `nil` for a generic password keychain.
+  public var protocolType: ProtocolType? {
     return options.protocolType
   }
 
@@ -827,8 +829,8 @@ struct Options {
   var service: String = ""
   var accessGroup: String? = nil
 
-  var server: URL!
-  var protocolType: ProtocolType!
+  var server: URL?
+  var protocolType: ProtocolType?
   var authenticationType: AuthenticationType = .default
 
   var accessibility: Accessibility = .afterFirstUnlock
@@ -935,9 +937,9 @@ extension Options {
     case .genericPassword:
       query[cf.AttributeService] = service
     case .internetPassword:
-      query[cf.AttributeServer] = server.host
-      query[cf.AttributePort] = server.port
-      query[cf.AttributeProtocol] = protocolType.rawValue
+      query[cf.AttributeServer] = server?.host
+      query[cf.AttributePort] = server?.port
+      query[cf.AttributeProtocol] = protocolType?.rawValue
       query[cf.AttributeAuthenticationType] = authenticationType.rawValue
     }
 
