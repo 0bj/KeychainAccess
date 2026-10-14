@@ -566,8 +566,6 @@ class KeychainAccessTests: XCTestCase {
                 return attributes?.label
             }
             XCTAssertNil(label)
-        } catch {
-            XCTFail("error occurred")
         }
 
         keychain["carol"] = "password1234"
@@ -578,8 +576,6 @@ class KeychainAccessTests: XCTestCase {
                 return attributes?.label
             }
             XCTAssertEqual(label, "Twitter Account")
-        } catch {
-            XCTFail("error occurred")
         }
     }
 
@@ -594,8 +590,6 @@ class KeychainAccessTests: XCTestCase {
                 return attributes?.comment
             }
             XCTAssertNil(comment)
-        } catch {
-            XCTFail("error occurred")
         }
 
         keychain["carol"] = "password1234"
@@ -606,8 +600,6 @@ class KeychainAccessTests: XCTestCase {
                 return attributes?.comment
             }
             XCTAssertEqual(comment, "Alice Smith")
-        } catch {
-            XCTFail("error occurred")
         }
     }
 
@@ -628,8 +620,6 @@ class KeychainAccessTests: XCTestCase {
                 return attributes?.comment
             }
             XCTAssertNil(comment)
-        } catch {
-            XCTFail("error occurred")
         }
 
         keychain["carol"] = "password1234"
@@ -645,8 +635,6 @@ class KeychainAccessTests: XCTestCase {
                 return attributes?.comment
             }
             XCTAssertEqual(comment, "Alice Smith")
-        } catch {
-            XCTFail("error occurred")
         }
     }
 
@@ -664,32 +652,15 @@ class KeychainAccessTests: XCTestCase {
 
     func testStringConversionError() throws {
         let keychain = Keychain(service: "Twitter")
+        // 0xFF never occurs in UTF-8
+        try keychain.set(Data([0xFF, 0xFE, 0xFD]), key: "NotUTF8")
 
-        let length = 256
-        let data = NSMutableData(length: length)!
-        let bytes = data.mutableBytes.bindMemory(to: UInt8.self, capacity: length)
-        _ = SecRandomCopyBytes(kSecRandomDefault, length, bytes)
-
-        do {
-            try keychain.set(data as Data, key: "RandomData")
-            let _ = try keychain.getString("RandomData")
-            XCTFail("no error occurred")
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, KeychainAccessErrorDomain)
-            XCTAssertEqual(error.code, Int(Status.conversionError.rawValue))
-            XCTAssertEqual(error.userInfo[NSLocalizedDescriptionKey] as! String, Status.conversionError.localizedDescription)
-        } catch {
-            XCTFail("unexpected error occurred")
-        }
-
-        do {
-            try keychain.set(data as Data, key: "RandomData")
-            let _ = try keychain.getString("RandomData")
-            XCTFail("no error occurred")
-        } catch Status.conversionError {
-            XCTAssertTrue(true)
-        } catch {
-            XCTFail("unexpected error occurred")
+        XCTAssertThrowsError(try keychain.getString("NotUTF8")) { error in
+            XCTAssertEqual(error as? Status, .conversionError)
+            let nsError = error as NSError
+            XCTAssertEqual(nsError.domain, KeychainAccessErrorDomain)
+            XCTAssertEqual(nsError.code, Int(Status.conversionError.rawValue))
+            XCTAssertEqual(nsError.userInfo[NSLocalizedDescriptionKey] as? String, Status.conversionError.localizedDescription)
         }
     }
 
@@ -701,8 +672,6 @@ class KeychainAccessTests: XCTestCase {
         do {
             let persistentRef = try keychain.get("carol") { $0?.persistentRef }
             XCTAssertNil(persistentRef)
-        } catch {
-            XCTFail("error occurred")
         }
 
         keychain["carol"] = "password1234"
@@ -711,8 +680,6 @@ class KeychainAccessTests: XCTestCase {
         do {
             let persistentRef = try keychain.get("carol") { $0?.persistentRef }
             XCTAssertNotNil(persistentRef)
-        } catch {
-            XCTFail("error occurred")
         }
     }
 
@@ -736,8 +703,6 @@ class KeychainAccessTests: XCTestCase {
             do {
                 let attributes = try keychain.get("carol") { $0 }
                 XCTAssertNil(attributes)
-            } catch {
-                XCTFail("error occurred")
             }
 
             keychain["carol"] = "password1234"
@@ -776,8 +741,6 @@ class KeychainAccessTests: XCTestCase {
 
                 XCTAssertEqual(attributes?[String(kSecClass)] as? String, ItemClass.genericPassword.rawValue)
                 XCTAssertEqual(attributes?[String(kSecValueData)] as? Data, "password1234".data(using: .utf8))
-            } catch {
-                XCTFail("error occurred")
             }
         }
 
@@ -800,8 +763,6 @@ class KeychainAccessTests: XCTestCase {
             do {
                 let attributes = try keychain.get("carol") { $0 }
                 XCTAssertNil(attributes)
-            } catch {
-                XCTFail("error occurred")
             }
 
             do {
@@ -837,8 +798,6 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertEqual(attributes?.authenticationType, AuthenticationType.default.rawValue)
                 XCTAssertEqual(attributes?.port, 443)
                 XCTAssertEqual(attributes?.path, "")
-            } catch {
-                XCTFail("error occurred")
             }
             do {
                 let keychain = Keychain(server: URL(string: "https://example.com:443/api/login/")!, protocolType: .https)
@@ -877,8 +836,6 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertEqual(attributes?.authenticationType, AuthenticationType.default.rawValue)
                 XCTAssertEqual(attributes?.port, 443)
                 XCTAssertEqual(attributes?.path, "")
-            } catch {
-                XCTFail("error occurred")
             }
             do {
                 let keychain = Keychain(server: URL(string: "https://example.com:443/api/login/")!, protocolType: .https)
@@ -1008,32 +965,24 @@ class KeychainAccessTests: XCTestCase {
             let keychain = Keychain(service: "Twitter", accessGroup: sharedAccessGroup)
             try keychain.removeAll()
             XCTAssertTrue(true, "no error occurred")
-        } catch {
-            XCTFail("error occurred")
         }
 
         do {
             let keychain = Keychain(service: "Twitter")
             try keychain.removeAll()
             XCTAssertTrue(true, "no error occurred")
-        } catch {
-            XCTFail("error occurred")
         }
 
         do {
             let keychain = Keychain(server: URL(string: "https://example.org")!, protocolType: .https)
             try keychain.removeAll()
             XCTAssertTrue(true, "no error occurred")
-        } catch {
-            XCTFail("error occurred")
         }
 
         do {
             let keychain = Keychain()
             try keychain.removeAll()
             XCTAssertTrue(true, "no error occurred")
-        } catch {
-            XCTFail("error occurred")
         }
 
         do {
@@ -1043,27 +992,19 @@ class KeychainAccessTests: XCTestCase {
             do {
                 try keychain.set("bob", key: "username")
                 XCTAssertTrue(true, "no error occurred")
-            } catch {
-                XCTFail("error occurred")
             }
             do {
                 try keychain.set("password_1234", key: "password")
                 XCTAssertTrue(true, "no error occurred")
-            } catch {
-                XCTFail("error occurred")
             }
 
             do {
                 let username = try keychain.get("username")
                 XCTAssertEqual(username, "bob")
-            } catch {
-                XCTFail("error occurred")
             }
             do {
                 let password = try keychain.get("password")
                 XCTAssertEqual(password, "password_1234")
-            } catch {
-                XCTFail("error occurred")
             }
         }
 
@@ -1074,27 +1015,19 @@ class KeychainAccessTests: XCTestCase {
             do {
                 try keychain.set("alice", key: "username")
                 XCTAssertTrue(true, "no error occurred")
-            } catch {
-                XCTFail("error occurred")
             }
             do {
                 try keychain.set("1234_password", key: "password")
                 XCTAssertTrue(true, "no error occurred")
-            } catch {
-                XCTFail("error occurred")
             }
 
             do {
                 let username = try keychain.get("username")
                 XCTAssertEqual(username, "alice")
-            } catch {
-                XCTFail("error occurred")
             }
             do {
                 let password = try keychain.get("password")
                 XCTAssertEqual(password, "1234_password")
-            } catch {
-                XCTFail("error occurred")
             }
         }
         
@@ -1105,14 +1038,10 @@ class KeychainAccessTests: XCTestCase {
             do {
                 try keychain.remove("username")
                 XCTAssertNil(try keychain.get("username"))
-            } catch {
-                XCTFail("error occurred")
             }
             do {
                 try keychain.remove("password")
                 XCTAssertNil(try keychain.get("username"))
-            } catch {
-                XCTFail("error occurred")
             }
         }
     }
