@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		140F196F1A49D79500B0016A /* KeychainAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140F196E1A49D79500B0016A /* KeychainAccessTests.swift */; };
 		140F197B1A49D89200B0016A /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140F197A1A49D89200B0016A /* Keychain.swift */; };
+		BC31761A146241C763ECA2D1 /* Attributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600EFFE732ECC469C453A165 /* Attributes.swift */; };
+		9B7873E36A21ABA6121EB2FB /* KeychainTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7954145F8CA467C5817606BE /* KeychainTypes.swift */; };
+		B9470528DFB31D28A96B4E45 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899FEB4A9076F3CD46E755E /* Options.swift */; };
+		3C9468602725F9D6581DBCE0 /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = E810407D3A2883FBE80DFFB7 /* Status.swift */; };
 		142EDA851BCB505F00A32149 /* ErrorTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142EDA841BCB505F00A32149 /* ErrorTypeTests.swift */; };
 		148F9D4A1BCB4118006EDF48 /* EnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148F9D491BCB4118006EDF48 /* EnumTests.swift */; };
 		14A630181D3293C700809B3F /* TestHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14A630171D3293C700809B3F /* TestHostApp.swift */; };
@@ -60,6 +64,10 @@
 		140F19671A49D79500B0016A /* KeychainAccessTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeychainAccessTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		140F196E1A49D79500B0016A /* KeychainAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainAccessTests.swift; sourceTree = "<group>"; };
 		140F197A1A49D89200B0016A /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		600EFFE732ECC469C453A165 /* Attributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attributes.swift; sourceTree = "<group>"; };
+		7954145F8CA467C5817606BE /* KeychainTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainTypes.swift; sourceTree = "<group>"; };
+		F899FEB4A9076F3CD46E755E /* Options.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
+		E810407D3A2883FBE80DFFB7 /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
 		142EDA841BCB505F00A32149 /* ErrorTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTypeTests.swift; sourceTree = "<group>"; };
 		148E44E51BF9EDCB004FFEC1 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Base.xcconfig; path = Configurations/Base.xcconfig; sourceTree = "<group>"; };
 		148E44E61BF9EDCB004FFEC1 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Configurations/Debug.xcconfig; sourceTree = "<group>"; };
@@ -125,6 +133,10 @@
 			isa = PBXGroup;
 			children = (
 				140F197A1A49D89200B0016A /* Keychain.swift */,
+				600EFFE732ECC469C453A165 /* Attributes.swift */,
+				7954145F8CA467C5817606BE /* KeychainTypes.swift */,
+				F899FEB4A9076F3CD46E755E /* Options.swift */,
+				E810407D3A2883FBE80DFFB7 /* Status.swift */,
 			);
 			path = KeychainAccess;
 			sourceTree = "<group>";
@@ -304,6 +316,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				140F197B1A49D89200B0016A /* Keychain.swift in Sources */,
+				BC31761A146241C763ECA2D1 /* Attributes.swift in Sources */,
+				9B7873E36A21ABA6121EB2FB /* KeychainTypes.swift in Sources */,
+				B9470528DFB31D28A96B4E45 /* Options.swift in Sources */,
+				3C9468602725F9D6581DBCE0 /* Status.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
