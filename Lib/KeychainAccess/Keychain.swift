@@ -22,16 +22,19 @@ private let logger = Logger(subsystem: "io.github.0bj.KeychainAccess", category:
 public final class Keychain: @unchecked Sendable {
   private var cf: CFStringWrap { .shared }
 
+  /// Whether this keychain stores generic or internet passwords.
   public var itemClass: ItemClass {
     options.itemClass
   }
 
+  /// The service of a generic password keychain.
   public var service: String {
     options.service
   }
 
-  // This attribute (kSecAttrAccessGroup) applies to macOS keychain items only if you also set a value of true for the
-  // kSecUseDataProtectionKeychain key, the kSecAttrSynchronizable key, or both.
+  /// The keychain access group items are shared through.
+  ///
+  /// On macOS it applies only to items in the data protection keychain or synchronizable items.
   public var accessGroup: String? {
     options.accessGroup
   }
@@ -46,37 +49,44 @@ public final class Keychain: @unchecked Sendable {
     options.protocolType
   }
 
+  /// The authentication type of an internet password keychain.
   public var authenticationType: AuthenticationType {
     options.authenticationType
   }
 
+  /// When stored items are accessible.
   public var accessibility: Accessibility {
     options.accessibility
   }
 
+  /// The access control policy for stored items, if any.
   public var authenticationPolicy: AuthenticationPolicy? {
     options.authenticationPolicy
   }
 
+  /// Whether stored items are synchronized through iCloud Keychain.
   public var synchronizable: Bool {
     options.synchronizable
   }
 
+  /// The label set on stored items.
   public var label: String? {
     options.label
   }
 
+  /// The comment set on stored items.
   public var comment: String? {
     options.comment
   }
 
 #if os(iOS) || os(macOS)
+  /// The context used to authenticate protected items.
   public var authenticationContext: LAContext? {
     options.authenticationContext
   }
 #endif
 
-  fileprivate let options: Options
+  private let options: Options
 
   // MARK: - Initializers
 
@@ -128,7 +138,7 @@ public final class Keychain: @unchecked Sendable {
     self.init(options)
   }
 
-  fileprivate init(_ opts: Options) {
+  private init(_ opts: Options) {
     options = opts
   }
 
@@ -432,7 +442,7 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK: - Private
 
-  fileprivate func items() -> [[String: Any]] {
+  private func items() -> [[String: Any]] {
     var query = options.query()
     query[cf.MatchLimit] = cf.MatchLimitAll
     query[cf.ReturnAttributes] = kCFBooleanTrue
@@ -444,7 +454,7 @@ public final class Keychain: @unchecked Sendable {
   }
 
   /// Returns the items matching `query`, or `[]` if there are none or the query failed (failures are logged).
-  fileprivate class func copyItems(_ query: [String: Any]) -> [[String: Any]] {
+  private class func copyItems(_ query: [String: Any]) -> [[String: Any]] {
     var result: AnyObject?
     let status = SecItemCopyMatching(query as CFDictionary, &result)
     switch status {
@@ -458,7 +468,7 @@ public final class Keychain: @unchecked Sendable {
     }
   }
 
-  fileprivate class func prettify(itemClass: ItemClass, items: [[String: Any]]) -> [[String: Any]] {
+  private class func prettify(itemClass: ItemClass, items: [[String: Any]]) -> [[String: Any]] {
     let cf = CFStringWrap.shared
     let items = items.map { attributes -> [String: Any] in
       var item = [String: Any]()
@@ -510,7 +520,7 @@ public final class Keychain: @unchecked Sendable {
   /// Maps an `OSStatus` to `Status`, or to an `NSOSStatusErrorDomain` error that keeps the original code
   /// when `Status` has no matching case.
   @discardableResult
-  fileprivate class func securityError(status: OSStatus) -> any Error {
+  private class func securityError(status: OSStatus) -> any Error {
     let error: any Error
     if let known = Status(rawValue: status) {
       error = known
@@ -526,23 +536,24 @@ public final class Keychain: @unchecked Sendable {
   }
 
   @discardableResult
-  fileprivate func securityError(status: OSStatus) -> any Error {
+  private func securityError(status: OSStatus) -> any Error {
     type(of: self).securityError(status: status)
   }
 
   /// Query matching the item stored for `key`.
-  fileprivate func itemQuery(_ key: String, ignoringAttributeSynchronizable: Bool) -> [String: Any] {
+  private func itemQuery(_ key: String, ignoringAttributeSynchronizable: Bool) -> [String: Any] {
     var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.AttributeAccount] = key
     return query
   }
 
-  fileprivate func check(_ status: OSStatus) throws {
+  private func check(_ status: OSStatus) throws {
     if status != errSecSuccess {
       throw securityError(status: status)
     }
   }
 }
+
 extension Keychain: CustomStringConvertible, CustomDebugStringConvertible {
   public var description: String {
     let items = allItems()

@@ -96,7 +96,7 @@ public struct Attributes: @unchecked Sendable {
     value(cf.AttributePath)
   }
 
-  fileprivate let attributes: [String: Any]
+  private let attributes: [String: Any]
 
   init(attributes: [String: Any]) {
     self.attributes = attributes
@@ -112,6 +112,7 @@ public struct Attributes: @unchecked Sendable {
     }
   }
 }
+
 extension Attributes: CustomStringConvertible, CustomDebugStringConvertible {
   public var description: String {
     "\(attributes)"

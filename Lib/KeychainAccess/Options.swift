@@ -17,7 +17,7 @@ struct Options {
   var itemClass: ItemClass = .genericPassword
 
   var service: String = ""
-  var accessGroup: String? = nil
+  var accessGroup: String?
 
   var server: URL?
   var protocolType: ProtocolType?
@@ -90,14 +90,13 @@ struct CFStringWrap: @unchecked Sendable {
 
   let UseAuthenticationContext = String(kSecUseAuthenticationContext)
 }
+
 extension Options {
   func query(ignoringAttributeSynchronizable: Bool = true) -> [String: Any] {
     var query = [String: Any]()
 
     query[cf.Class] = itemClass.rawValue
-    if let accessGroup = self.accessGroup {
-      query[cf.AttributeAccessGroup] = accessGroup
-    }
+    query[cf.AttributeAccessGroup] = accessGroup
     if ignoringAttributeSynchronizable {
       query[cf.AttributeSynchronizable] = cf.SynchronizableAny
     } else {
@@ -115,9 +114,7 @@ extension Options {
     }
 
 #if os(iOS) || os(macOS)
-    if authenticationContext != nil {
-      query[cf.UseAuthenticationContext] = authenticationContext
-    }
+    query[cf.UseAuthenticationContext] = authenticationContext
 #endif
 
     return query
@@ -125,23 +122,16 @@ extension Options {
 
   /// Attributes to add (`key` set) or to update (`key` nil) an item with `value`, including custom `attributes`.
   func attributes(key: String?, value: Data) throws -> [String: Any] {
-    var attributes: [String: Any]
-
-    if key != nil {
+    var attributes = [String: Any]()
+    if let key {
       attributes = query()
       attributes[cf.AttributeAccount] = key
-    } else {
-      attributes = [String: Any]()
     }
 
     attributes[cf.ValueData] = value
 
-    if label != nil {
-      attributes[cf.AttributeLabel] = label
-    }
-    if comment != nil {
-      attributes[cf.AttributeComment] = comment
-    }
+    attributes[cf.AttributeLabel] = label
+    attributes[cf.AttributeComment] = comment
 
     if let policy = authenticationPolicy {
       var error: Unmanaged<CFError>?

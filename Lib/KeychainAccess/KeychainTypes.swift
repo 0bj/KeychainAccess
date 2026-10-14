@@ -145,6 +145,7 @@ public struct AuthenticationPolicy: Sendable, OptionSet {
     self.rawValue = rawValue
   }
 }
+
 extension ItemClass: RawRepresentable, CustomStringConvertible {
   public init?(rawValue: String) {
     guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
