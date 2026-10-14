@@ -8,12 +8,12 @@
 import Foundation
 import Security
 
-public enum ItemClass: Sendable {
+public enum ItemClass: Sendable, CaseIterable {
   case genericPassword
   case internetPassword
 }
 
-public enum ProtocolType: Sendable {
+public enum ProtocolType: Sendable, CaseIterable {
   case ftp
   case ftpAccount
   case http
@@ -47,7 +47,7 @@ public enum ProtocolType: Sendable {
   case pop3S
 }
 
-public enum AuthenticationType: Sendable {
+public enum AuthenticationType: Sendable, CaseIterable {
   case ntlm
   case msn
   case dpa
@@ -58,7 +58,7 @@ public enum AuthenticationType: Sendable {
   case `default`
 }
 
-public enum Accessibility: Sendable {
+public enum Accessibility: Sendable, CaseIterable {
   /// Item data can only be accessed
   /// while the device is unlocked. This is recommended for items that only
   /// need be accessible while the application is in the foreground. Items
@@ -147,14 +147,10 @@ public struct AuthenticationPolicy: Sendable, OptionSet {
 }
 extension ItemClass: RawRepresentable, CustomStringConvertible {
   public init?(rawValue: String) {
-    switch rawValue {
-    case String(kSecClassGenericPassword):
-      self = .genericPassword
-    case String(kSecClassInternetPassword):
-      self = .internetPassword
-    default:
+    guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
       return nil
     }
+    self = match
   }
 
   public var rawValue: String {
@@ -178,72 +174,10 @@ extension ItemClass: RawRepresentable, CustomStringConvertible {
 
 extension ProtocolType: RawRepresentable, CustomStringConvertible {
   public init?(rawValue: String) {
-    switch rawValue {
-    case String(kSecAttrProtocolFTP):
-      self = .ftp
-    case String(kSecAttrProtocolFTPAccount):
-      self = .ftpAccount
-    case String(kSecAttrProtocolHTTP):
-      self = .http
-    case String(kSecAttrProtocolIRC):
-      self = .irc
-    case String(kSecAttrProtocolNNTP):
-      self = .nntp
-    case String(kSecAttrProtocolPOP3):
-      self = .pop3
-    case String(kSecAttrProtocolSMTP):
-      self = .smtp
-    case String(kSecAttrProtocolSOCKS):
-      self = .socks
-    case String(kSecAttrProtocolIMAP):
-      self = .imap
-    case String(kSecAttrProtocolLDAP):
-      self = .ldap
-    case String(kSecAttrProtocolAppleTalk):
-      self = .appleTalk
-    case String(kSecAttrProtocolAFP):
-      self = .afp
-    case String(kSecAttrProtocolTelnet):
-      self = .telnet
-    case String(kSecAttrProtocolSSH):
-      self = .ssh
-    case String(kSecAttrProtocolFTPS):
-      self = .ftps
-    case String(kSecAttrProtocolHTTPS):
-      self = .https
-    case String(kSecAttrProtocolHTTPProxy):
-      self = .httpProxy
-    case String(kSecAttrProtocolHTTPSProxy):
-      self = .httpsProxy
-    case String(kSecAttrProtocolFTPProxy):
-      self = .ftpProxy
-    case String(kSecAttrProtocolSMB):
-      self = .smb
-    case String(kSecAttrProtocolRTSP):
-      self = .rtsp
-    case String(kSecAttrProtocolRTSPProxy):
-      self = .rtspProxy
-    case String(kSecAttrProtocolDAAP):
-      self = .daap
-    case String(kSecAttrProtocolEPPC):
-      self = .eppc
-    case String(kSecAttrProtocolIPP):
-      self = .ipp
-    case String(kSecAttrProtocolNNTPS):
-      self = .nntps
-    case String(kSecAttrProtocolLDAPS):
-      self = .ldaps
-    case String(kSecAttrProtocolTelnetS):
-      self = .telnetS
-    case String(kSecAttrProtocolIMAPS):
-      self = .imaps
-    case String(kSecAttrProtocolIRCS):
-      self = .ircs
-    case String(kSecAttrProtocolPOP3S):
-      self = .pop3S
-    default:
+    guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
       return nil
     }
+    self = match
   }
 
   public var rawValue: String {
@@ -383,26 +317,10 @@ extension ProtocolType: RawRepresentable, CustomStringConvertible {
 
 extension AuthenticationType: RawRepresentable, CustomStringConvertible {
   public init?(rawValue: String) {
-    switch rawValue {
-    case String(kSecAttrAuthenticationTypeNTLM):
-      self = .ntlm
-    case String(kSecAttrAuthenticationTypeMSN):
-      self = .msn
-    case String(kSecAttrAuthenticationTypeDPA):
-      self = .dpa
-    case String(kSecAttrAuthenticationTypeRPA):
-      self = .rpa
-    case String(kSecAttrAuthenticationTypeHTTPBasic):
-      self = .httpBasic
-    case String(kSecAttrAuthenticationTypeHTTPDigest):
-      self = .httpDigest
-    case String(kSecAttrAuthenticationTypeHTMLForm):
-      self = .htmlForm
-    case String(kSecAttrAuthenticationTypeDefault):
-      self = .`default`
-    default:
+    guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
       return nil
     }
+    self = match
   }
 
   public var rawValue: String {
@@ -450,20 +368,10 @@ extension AuthenticationType: RawRepresentable, CustomStringConvertible {
 
 extension Accessibility: RawRepresentable, CustomStringConvertible {
   public init?(rawValue: String) {
-    switch rawValue {
-    case String(kSecAttrAccessibleWhenUnlocked):
-      self = .whenUnlocked
-    case String(kSecAttrAccessibleAfterFirstUnlock):
-      self = .afterFirstUnlock
-    case String(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly):
-      self = .whenPasscodeSetThisDeviceOnly
-    case String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly):
-      self = .whenUnlockedThisDeviceOnly
-    case String(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly):
-      self = .afterFirstUnlockThisDeviceOnly
-    default:
+    guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
       return nil
     }
+    self = match
   }
 
   public var rawValue: String {
