@@ -284,6 +284,10 @@ public struct Attributes: @unchecked Sendable {
 }
 
 // Immutable: every modifier returns a new instance, and SecItem APIs are thread-safe.
+/// A keychain of generic or internet passwords.
+///
+/// Configure it with the fluent modifiers (`accessibility(_:)`, `synchronizable(_:)`, `label(_:)`, ...);
+/// each returns a new `Keychain`.
 public final class Keychain: @unchecked Sendable {
   private var cf: CFStringWrap { .shared }
 
@@ -345,6 +349,7 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Generic password keychain whose service is the main bundle identifier.
   public convenience init() {
     var options = Options()
     if let bundleIdentifier = Bundle.main.bundleIdentifier {
@@ -353,6 +358,7 @@ public final class Keychain: @unchecked Sendable {
     self.init(options)
   }
 
+  /// Generic password keychain for the main bundle identifier, shared through `accessGroup`.
   public convenience init(accessGroup: String) {
     var options = Options()
     if let bundleIdentifier = Bundle.main.bundleIdentifier {
@@ -362,6 +368,7 @@ public final class Keychain: @unchecked Sendable {
     self.init(options)
   }
 
+  /// Generic password keychain for `service`, optionally shared through `accessGroup`.
   public convenience init(service: String, accessGroup: String? = nil) {
     var options = Options()
     options.service = service
@@ -369,6 +376,9 @@ public final class Keychain: @unchecked Sendable {
     self.init(options)
   }
 
+  /// Internet password keychain for `server`.
+  ///
+  /// - Precondition: `server` is a valid URL string.
   public convenience init(server: String, protocolType: ProtocolType, accessGroup: String? = nil, authenticationType: AuthenticationType = .default) {
     guard let url = URL(string: server) else {
       preconditionFailure("Invalid server URL: \(server)")
@@ -376,6 +386,7 @@ public final class Keychain: @unchecked Sendable {
     self.init(server: url, protocolType: protocolType, accessGroup: accessGroup, authenticationType: authenticationType)
   }
 
+  /// Internet password keychain for `server`.
   public convenience init(server: URL, protocolType: ProtocolType, accessGroup: String? = nil, authenticationType: AuthenticationType = .default) {
     var options = Options()
     options.itemClass = .internetPassword
@@ -392,12 +403,14 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Returns a keychain that stores items with `accessibility`.
   public func accessibility(_ accessibility: Accessibility) -> Keychain {
     var options = self.options
     options.accessibility = accessibility
     return Keychain(options)
   }
 
+  /// Returns a keychain that protects stored items with `authenticationPolicy` (e.g. biometry or passcode).
   public func accessibility(_ accessibility: Accessibility, authenticationPolicy: AuthenticationPolicy) -> Keychain {
     var options = self.options
     options.accessibility = accessibility
@@ -405,24 +418,28 @@ public final class Keychain: @unchecked Sendable {
     return Keychain(options)
   }
 
+  /// Returns a keychain whose stored items are (or are not) synchronized through iCloud Keychain.
   public func synchronizable(_ synchronizable: Bool) -> Keychain {
     var options = self.options
     options.synchronizable = synchronizable
     return Keychain(options)
   }
 
+  /// Returns a keychain that sets `label` on stored items.
   public func label(_ label: String) -> Keychain {
     var options = self.options
     options.label = label
     return Keychain(options)
   }
 
+  /// Returns a keychain that sets `comment` on stored items.
   public func comment(_ comment: String) -> Keychain {
     var options = self.options
     options.comment = comment
     return Keychain(options)
   }
 
+  /// Returns a keychain that adds raw Security framework `attributes` to stored items.
   public func attributes(_ attributes: [String: Any]) -> Keychain {
     var options = self.options
     attributes.forEach { options.attributes.updateValue($1, forKey: $0) }
@@ -430,6 +447,9 @@ public final class Keychain: @unchecked Sendable {
   }
 
 #if os(iOS) || os(macOS)
+  /// Returns a keychain that authenticates protected items with `authenticationContext`.
+  ///
+  /// Set `LAContext.localizedReason` to customize the authentication prompt.
   public func authenticationContext(_ authenticationContext: LAContext) -> Keychain {
     var options = self.options
     options.authenticationContext = authenticationContext
@@ -439,10 +459,17 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Returns the string stored for `key`, or `nil` if there is none.
+  ///
+  /// - Parameter ignoringAttributeSynchronizable: When `true`, matches both synchronizable and local items;
+  ///   otherwise only items matching `synchronizable`.
   public func get(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> String? {
     return try getString(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
   }
 
+  /// Returns the UTF-8 string stored for `key`, or `nil` if there is none.
+  ///
+  /// - Throws: `Status.conversionError` if the stored data isn't UTF-8.
   public func getString(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> String? {
     guard let data = try getData(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable) else  {
       return nil
@@ -453,6 +480,7 @@ public final class Keychain: @unchecked Sendable {
     return string
   }
 
+  /// Returns the data stored for `key`, or `nil` if there is none.
   public func getData(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> Data? {
     var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
 
@@ -477,6 +505,7 @@ public final class Keychain: @unchecked Sendable {
     }
   }
 
+  /// Reads the item for `key` with all its attributes and returns `handler`'s result (`nil` attributes if there is no item).
   public func get<T>(_ key: String, ignoringAttributeSynchronizable: Bool = true, handler: (Attributes?) -> T) throws -> T {
     var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
 
@@ -507,6 +536,7 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Stores `value` as UTF-8 for `key`, adding or updating the item.
   public func set(_ value: String, key: String, ignoringAttributeSynchronizable: Bool = true) throws {
     guard let data = value.data(using: .utf8, allowLossyConversion: false) else {
       throw Status.conversionError
@@ -514,6 +544,7 @@ public final class Keychain: @unchecked Sendable {
     try set(data, key: key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
   }
 
+  /// Stores `value` for `key`, adding or updating the item.
   public func set(_ value: Data, key: String, ignoringAttributeSynchronizable: Bool = true) throws {
     var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.AttributeAccount] = key
@@ -551,6 +582,7 @@ public final class Keychain: @unchecked Sendable {
     }
   }
 
+  /// The string stored for `key`. Assigning `nil` removes the item. Errors are ignored; use `get`/`set` to handle them.
   public subscript(key: String) -> String? {
     get {
       return try? get(key)
@@ -569,6 +601,7 @@ public final class Keychain: @unchecked Sendable {
     }
   }
 
+  /// The string stored for `key`. Same as `subscript(_:)`.
   public subscript(string key: String) -> String? {
     get {
       return self[key]
@@ -579,6 +612,7 @@ public final class Keychain: @unchecked Sendable {
     }
   }
 
+  /// The data stored for `key`. Assigning `nil` removes the item. Errors are ignored.
   public subscript(data key: String) -> Data? {
     get {
       return try? getData(key)
@@ -597,6 +631,7 @@ public final class Keychain: @unchecked Sendable {
     }
   }
 
+  /// The attributes of the item for `key`, or `nil` if there is none or reading failed.
   public subscript(attributes key: String) -> Attributes? {
     get {
       return try? get(key) { $0 }
@@ -605,6 +640,7 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Removes the item for `key`. Does nothing if there is none.
   public func remove(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws {
     var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.AttributeAccount] = key
@@ -615,6 +651,7 @@ public final class Keychain: @unchecked Sendable {
     }
   }
 
+  /// Removes all items of this keychain's service (or server).
   public func removeAll() throws {
     var query = options.query()
 #if !os(iOS) && !os(watchOS) && !os(tvOS)
@@ -650,6 +687,7 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Returns `(service or server, key)` pairs of all items of `itemClass` the app can access.
   public class func allKeys(_ itemClass: ItemClass) -> [(String, String)] {
     let cf = CFStringWrap.shared
     var query = [String: Any]()
@@ -682,6 +720,7 @@ public final class Keychain: @unchecked Sendable {
     return []
   }
 
+  /// Returns the keys of all items of this keychain.
   public func allKeys() -> [String] {
     let allItems = type(of: self).prettify(itemClass: itemClass, items: items())
     let filter: ([String: Any]) -> String? = { $0["key"] as? String }
@@ -689,6 +728,7 @@ public final class Keychain: @unchecked Sendable {
     return allItems.compactMap(filter)
   }
 
+  /// Returns a readable description of all items of `itemClass` the app can access.
   public class func allItems(_ itemClass: ItemClass) -> [[String: Any]] {
     let cf = CFStringWrap.shared
     var query = [String: Any]()
@@ -717,6 +757,7 @@ public final class Keychain: @unchecked Sendable {
     return []
   }
 
+  /// Returns a readable description of all items of this keychain.
   public func allItems() -> [[String: Any]] {
     return type(of: self).prettify(itemClass: itemClass, items: items())
   }
