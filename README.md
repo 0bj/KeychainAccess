@@ -1,10 +1,6 @@
 # KeychainAccess
 
-[![Build Status](https://travis-ci.com/kishikawakatsumi/KeychainAccess.svg?branch=master)](https://travis-ci.com/kishikawakatsumi/KeychainAccess)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![SPM supported](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager)
-[![Version](https://img.shields.io/cocoapods/v/KeychainAccess.svg)](http://cocoadocs.org/docsets/KeychainAccess)
-[![Platform](https://img.shields.io/cocoapods/p/KeychainAccess.svg)](http://cocoadocs.org/docsets/KeychainAccess)
 
 KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and macOS. Makes using Keychain APIs extremely easy and much more palatable to use in Swift.
 
@@ -17,12 +13,11 @@ KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and macO
 - Support access group
 - [Support accessibility](#accessibility)
 - [Support iCloud sharing](#icloud_sharing)
-- **[Support TouchID and Keychain integration (iOS 8+)](#touch_id_integration)**
-- **[Support Shared Web Credentials (iOS 8+)](#shared_web_credentials)**
+- **[Support Touch ID / Face ID and Keychain integration](#touch_id_integration)**
 - [Works on both iOS & macOS](#requirements)
 - [watchOS and tvOS are supported](#requirements)
 - **[Mac Catalyst is supported](#requirements)**
-- **[Swift 3, 4 and 5 compatible](#requirements)**
+- **[Swift 6 compatible](#requirements)**
 
 ## :book: Usage
 
@@ -408,73 +403,6 @@ do {
 }
 ```
 
-### <a name="shared_web_credentials"> :key: Shared Web Credentials
-
-> Shared web credentials is a programming interface that enables native iOS apps to share credentials with their website counterparts. For example, a user may log in to a website in Safari, entering a user name and password, and save those credentials using the iCloud Keychain. Later, the user may run a native app from the same developer, and instead of the app requiring the user to reenter a user name and password, shared web credentials gives it access to the credentials that were entered earlier in Safari. The user can also create new accounts, update passwords, or delete her account from within the app. These changes are then saved and used by Safari.  
-> <https://developer.apple.com/library/ios/documentation/Security/Reference/SharedWebCredentialsRef/>
-
-```swift
-let keychain = Keychain(server: "https://www.kishikawakatsumi.com", protocolType: .HTTPS)
-
-let username = "kishikawakatsumi@mac.com"
-
-// First, check the credential in the app's Keychain
-if let password = try? keychain.get(username) {
-    // If found password in the Keychain,
-    // then log into the server
-} else {
-    // If not found password in the Keychain,
-    // try to read from Shared Web Credentials
-    keychain.getSharedPassword(username) { (password, error) -> () in
-        if password != nil {
-            // If found password in the Shared Web Credentials,
-            // then log into the server
-            // and save the password to the Keychain
-
-            keychain[username] = password
-        } else {
-            // If not found password either in the Keychain also Shared Web Credentials,
-            // prompt for username and password
-
-            // Log into server
-
-            // If the login is successful,
-            // save the credentials to both the Keychain and the Shared Web Credentials.
-
-            keychain[username] = inputPassword
-            keychain.setSharedPassword(inputPassword, account: username)
-        }
-    }
-}
-```
-
-#### Request all associated domain's credentials
-
-```swift
-Keychain.requestSharedWebCredential { (credentials, error) -> () in
-
-}
-```
-
-#### Generate strong random password
-
-Generate strong random password that is in the same format used by Safari autofill (xxx-xxx-xxx-xxx).
-
-```swift
-let password = Keychain.generatePassword() // => Nhu-GKm-s3n-pMx
-```
-
-#### How to set up Shared Web Credentials
-
-> 1. Add a com.apple.developer.associated-domains entitlement to your app. This entitlement must include all the domains with which you want to share credentials.
->
-> 2. Add an apple-app-site-association file to your website. This file must include application identifiers for all the apps with which the site wants to share credentials, and it must be properly signed.
->
-> 3. When the app is installed, the system downloads and verifies the site association file for each of its associated domains. If the verification is successful, the app is associated with the domain.
-
-**More details:**  
-<https://developer.apple.com/library/ios/documentation/Security/Reference/SharedWebCredentialsRef/>
-
 ### :mag: Debugging
 
 #### Display all stored items if print keychain object
@@ -557,25 +485,11 @@ OSStatus error:[-34018] Internal error when a required entitlement isn't present
 | **v3.2.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 4.0, 4.1, 4.2, 5.0 |
 | **v4.0.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 4.0, 4.1, 4.2, 5.1 |
 | **v4.1.x** | iOS 8+, macOS 10.9+, watchOS 3+, tvOS 9+, Mac Catalyst 13+ | 4.0, 4.1, 4.2, 5.1 |
+| **v5.0.x** | iOS 16+, macOS 15+, watchOS 10+, tvOS 16+, Mac Catalyst    | 6.x                |
+
+> Since v5.0.0 Shared Web Credentials API (`getSharedPassword`, `setSharedPassword`, `removeSharedPassword`, `requestSharedWebCredential`, `generatePassword`) has been removed. Use `ASAuthorizationController` with `ASAuthorizationPasswordRequest` (AuthenticationServices) instead.
 
 ## Installation
-
-### CocoaPods
-
-KeychainAccess is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following lines to your Podfile:
-
-```ruby
-use_frameworks!
-pod 'KeychainAccess'
-```
-
-### Carthage
-
-KeychainAccess is available through [Carthage](https://github.com/Carthage/Carthage). To install
-it, simply add the following line to your Cartfile:
-
-`github "kishikawakatsumi/KeychainAccess"`
 
 ### Swift Package Manager
 
@@ -592,7 +506,7 @@ Select `File > Add Packages... > Add Package Dependency...`,
 First, create `Package.swift` that its package declaration includes:
 
 ```swift
-// swift-tools-version:5.0
+// swift-tools-version:6.2
 import PackageDescription
 
 let package = Package(
@@ -601,7 +515,7 @@ let package = Package(
         .library(name: "MyLibrary", targets: ["MyLibrary"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "3.0.0"),
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "5.0.0"),
     ],
     targets: [
         .target(name: "MyLibrary", dependencies: ["KeychainAccess"]),

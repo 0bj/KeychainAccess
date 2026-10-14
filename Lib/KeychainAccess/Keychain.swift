@@ -111,7 +111,6 @@ public enum Accessibility {
    without a passcode. Disabling the device passcode will cause all
    items in this class to be deleted.
    */
-  @available(iOS 8.0, macOS 10.10, *)
   case whenPasscodeSetThisDeviceOnly
 
   /**
@@ -162,13 +161,12 @@ public enum AuthenticationUI {
   case skip
 }
 
-public struct AuthenticationPolicy: @unchecked Sendable, OptionSet {
+public struct AuthenticationPolicy: Sendable, OptionSet {
   /**
    User presence policy using Touch ID or Passcode. Touch ID does not
    have to be available or enrolled. Item is still accessible by Touch ID
    even if fingers are added or removed.
    */
-  @available(iOS 8.0, macOS 10.10, watchOS 2.0, tvOS 8.0, *)
   public static let userPresence = AuthenticationPolicy(rawValue: 1 << 0)
 
   /**
@@ -176,27 +174,23 @@ public struct AuthenticationPolicy: @unchecked Sendable, OptionSet {
    at least one finger must be enrolled. With Face ID user has to be enrolled. Item is still accessible by Touch ID even
    if fingers are added or removed. Item is still accessible by Face ID if user is re-enrolled.
    */
-  @available(iOS 11.3, macOS 10.13.4, watchOS 4.3, tvOS 11.3, *)
   public static let biometryAny = AuthenticationPolicy(rawValue: 1 << 1)
 
   /**
    Constraint: Touch ID from the set of currently enrolled fingers. Touch ID must be available and at least one finger must
    be enrolled. When fingers are added or removed, the item is invalidated. When Face ID is re-enrolled this item is invalidated.
    */
-  @available(iOS 11.3, macOS 10.13, watchOS 4.3, tvOS 11.3, *)
   public static let biometryCurrentSet = AuthenticationPolicy(rawValue: 1 << 3)
 
   /**
    Constraint: Device passcode
    */
-  @available(iOS 9.0, macOS 10.11, watchOS 2.0, tvOS 9.0, *)
   public static let devicePasscode = AuthenticationPolicy(rawValue: 1 << 4)
 
   /**
    Constraint: Watch
    */
   @available(iOS, unavailable)
-  @available(macOS 10.15, *)
   @available(watchOS, unavailable)
   @available(tvOS, unavailable)
   public static let watch = AuthenticationPolicy(rawValue: 1 << 5)
@@ -205,27 +199,23 @@ public struct AuthenticationPolicy: @unchecked Sendable, OptionSet {
    Constraint logic operation: when using more than one constraint,
    at least one of them must be satisfied.
    */
-  @available(iOS 9.0, macOS 10.12.1, watchOS 2.0, tvOS 9.0, *)
   public static let or = AuthenticationPolicy(rawValue: 1 << 14)
 
   /**
    Constraint logic operation: when using more than one constraint,
    all must be satisfied.
    */
-  @available(iOS 9.0, macOS 10.12.1, watchOS 2.0, tvOS 9.0, *)
   public static let and = AuthenticationPolicy(rawValue: 1 << 15)
 
   /**
    Create access control for private key operations (i.e. sign operation)
    */
-  @available(iOS 9.0, macOS 10.12.1, watchOS 2.0, tvOS 9.0, *)
   public static let privateKeyUsage = AuthenticationPolicy(rawValue: 1 << 30)
 
   /**
    Security: Application provided password for data encryption key generation.
    This is not a constraint but additional item encryption mechanism.
    */
-  @available(iOS 9.0, macOS 10.12.1, watchOS 2.0, tvOS 9.0, *)
   public static let applicationPassword = AuthenticationPolicy(rawValue: 1 << 31)
 
   public let rawValue: UInt
@@ -255,14 +245,10 @@ public struct Attributes {
     return attributes[cf.AttributeAccessible] as? String
   }
   public var accessControl: SecAccessControl? {
-    if #available(macOS 10.10, *) {
-      if let accessControl = attributes[cf.AttributeAccessControl] {
-        return (accessControl as! SecAccessControl)
-      }
-      return nil
-    } else {
-      return nil
+    if let accessControl = attributes[cf.AttributeAccessControl] {
+      return (accessControl as! SecAccessControl)
     }
+    return nil
   }
   public var accessGroup: String? {
     return attributes[cf.AttributeAccessGroup] as? String
@@ -371,7 +357,6 @@ public final class Keychain {
     return options.accessibility
   }
 
-  @available(iOS 8.0, macOS 10.10, *)
   @available(watchOS, unavailable)
   public var authenticationPolicy: AuthenticationPolicy? {
     return options.authenticationPolicy
@@ -390,7 +375,6 @@ public final class Keychain {
   }
 
 #if os(iOS) || os(macOS)
-  @available(iOS 9.0, macOS 10.11, *)
   public var authenticationContext: LAContext? {
     return options.authenticationContext
   }
@@ -450,7 +434,6 @@ public final class Keychain {
     return Keychain(options)
   }
 
-  @available(iOS 8.0, macOS 10.10, *)
   @available(watchOS, unavailable)
   public func accessibility(_ accessibility: Accessibility, authenticationPolicy: AuthenticationPolicy) -> Keychain {
     var options = self.options
@@ -484,7 +467,6 @@ public final class Keychain {
   }
 
 #if os(iOS) || os(macOS)
-  @available(iOS 9.0, macOS 10.11, *)
   public func authenticationContext(_ authenticationContext: LAContext) -> Keychain {
     var options = self.options
     options.authenticationContext = authenticationContext
@@ -503,7 +485,6 @@ public final class Keychain {
       return nil
     }
     guard let string = String(data: data, encoding: .utf8) else {
-      print("failed to convert data to string")
       throw Status.conversionError
     }
     return string
@@ -565,7 +546,6 @@ public final class Keychain {
 
   public func set(_ value: String, key: String, ignoringAttributeSynchronizable: Bool = true) throws {
     guard let data = value.data(using: .utf8, allowLossyConversion: false) else {
-      print("failed to convert string to data")
       throw Status.conversionError
     }
     try set(data, key: key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
@@ -582,7 +562,6 @@ public final class Keychain {
 
       var (attributes, error) = options.attributes(key: nil, value: value)
       if let error = error {
-        print(error.localizedDescription)
         throw error
       }
 
@@ -595,7 +574,6 @@ public final class Keychain {
     case errSecItemNotFound:
       var (attributes, error) = options.attributes(key: key, value: value)
       if let error = error {
-        print(error.localizedDescription)
         throw error
       }
 
@@ -777,148 +755,6 @@ public final class Keychain {
     return type(of: self).prettify(itemClass: itemClass, items: items())
   }
 
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  public func getSharedPassword(_ completion: @escaping (_ account: String?, _ password: String?, _ error: Error?) -> () = { account, password, error -> () in }) {
-    if let domain = server.host {
-      type(of: self).requestSharedWebCredential(domain: domain, account: nil) { (credentials, error) -> () in
-        if let credential = credentials.first {
-          let account = credential["account"]
-          let password = credential["password"]
-          completion(account, password, error)
-        } else {
-          completion(nil, nil, error)
-        }
-      }
-    } else {
-      let error = securityError(status: Status.param.rawValue)
-      completion(nil, nil, error)
-    }
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  public func getSharedPassword(_ account: String, completion: @escaping (_ password: String?, _ error: Error?) -> () = { password, error -> () in }) {
-    if let domain = server.host {
-      type(of: self).requestSharedWebCredential(domain: domain, account: account) { (credentials, error) -> () in
-        if let credential = credentials.first {
-          if let password = credential["password"] {
-            completion(password, error)
-          } else {
-            completion(nil, error)
-          }
-        } else {
-          completion(nil, error)
-        }
-      }
-    } else {
-      let error = securityError(status: Status.param.rawValue)
-      completion(nil, error)
-    }
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  public func setSharedPassword(_ password: String, account: String, completion: @escaping (_ error: Error?) -> () = { e -> () in }) {
-    setSharedPassword(password as String?, account: account, completion: completion)
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  fileprivate func setSharedPassword(_ password: String?, account: String, completion: @escaping (_ error: Error?) -> () = { e -> () in }) {
-    if let domain = server.host {
-      SecAddSharedWebCredential(domain as CFString, account as CFString, password as CFString?) { error -> () in
-        if let error = error {
-          completion(error.error)
-        } else {
-          completion(nil)
-        }
-      }
-    } else {
-      let error = securityError(status: Status.param.rawValue)
-      completion(error)
-    }
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  public func removeSharedPassword(_ account: String, completion: @escaping (_ error: Error?) -> () = { e -> () in }) {
-    setSharedPassword(nil, account: account, completion: completion)
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  public class func requestSharedWebCredential(_ completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> () = { credentials, error -> () in }) {
-    requestSharedWebCredential(domain: nil, account: nil, completion: completion)
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  public class func requestSharedWebCredential(domain: String, completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> () = { credentials, error -> () in }) {
-    requestSharedWebCredential(domain: domain, account: nil, completion: completion)
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  public class func requestSharedWebCredential(domain: String, account: String, completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> () = { credentials, error -> () in }) {
-    requestSharedWebCredential(domain: Optional(domain), account: Optional(account)!, completion: completion)
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  @available(iOS 8.0, *)
-  fileprivate class func requestSharedWebCredential(domain: String?, account: String?, completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> ()) {
-    SecRequestSharedWebCredential(domain as CFString?, account as CFString?) { (credentials, error) -> () in
-      var remoteError: NSError?
-      if let error = error {
-        remoteError = error.error
-        if remoteError?.code != Int(errSecItemNotFound) {
-          print("error:[\(remoteError!.code)] \(remoteError!.localizedDescription)")
-        }
-      }
-      if let credentials = credentials {
-        let credentials = (credentials as NSArray).map { credentials -> [String: String] in
-          var credential = [String: String]()
-          if let credentials = credentials as? [String: String] {
-            let cf = CFStringWrap()
-            if let server = credentials[cf.AttributeServer] {
-              credential["server"] = server
-            }
-            if let account = credentials[cf.AttributeAccount] {
-              credential["account"] = account
-            }
-            if let password = credentials[cf.SharedPassword] {
-              credential["password"] = password
-            }
-          }
-          return credential
-        }
-        completion(credentials, remoteError)
-      } else {
-        completion([], remoteError)
-      }
-    }
-  }
-#endif
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  /**
-   @abstract Returns a randomly generated password.
-   @return String password in the form xxx-xxx-xxx-xxx where x is taken from the sets "abcdefghkmnopqrstuvwxy", "ABCDEFGHJKLMNPQRSTUVWXYZ", "3456789" with at least one character from each set being present.
-   */
-  @available(iOS 8.0, *)
-  public class func generatePassword() -> String {
-    return SecCreateSharedWebCredentialPassword()! as String
-  }
-#endif
-
   // MARK:
 
   fileprivate func items() -> [[String: Any]] {
@@ -1041,7 +877,9 @@ struct Options {
   var label: String?
   var comment: String?
 
+#if os(iOS) || os(macOS)
   var authenticationContext: LAContext?
+#endif
 
   var attributes = [String: Any]()
 }
@@ -1053,7 +891,6 @@ struct CFStringWrap: @unchecked Sendable {
   /** ute Key Constants */
   let AttributeAccessible = String(kSecAttrAccessible)
 
-  @available(iOS 8.0, macOS 10.10, *)
   let AttributeAccessControl = String(kSecAttrAccessControl)
 
   let AttributeAccessGroup = String(kSecAttrAccessGroup)
@@ -1095,13 +932,7 @@ struct CFStringWrap: @unchecked Sendable {
   let ValueRef = String(kSecValueRef)
   let ValuePersistentRef = String(kSecValuePersistentRef)
 
-  @available(iOS 9.0, macOS 10.11, watchOS 2.0, tvOS 9.0, *)
   let UseAuthenticationContext = String(kSecUseAuthenticationContext)
-
-#if os(iOS) && !targetEnvironment(macCatalyst)
-  /** Credential Key Constants */
-  let SharedPassword = String(kSecSharedPassword)
-#endif
 }
 
 extension Keychain: CustomStringConvertible, CustomDebugStringConvertible {
@@ -1148,11 +979,9 @@ extension Options {
       query[cf.AttributeAuthenticationType] = authenticationType.rawValue
     }
 
-#if !os(watchOS)
-    if #available(iOS 9.0, macOS 10.11, *) {
-      if authenticationContext != nil {
-        query[cf.UseAuthenticationContext] = authenticationContext
-      }
+#if os(iOS) || os(macOS)
+    if authenticationContext != nil {
+      query[cf.UseAuthenticationContext] = authenticationContext
     }
 #endif
 
@@ -1179,19 +1008,15 @@ extension Options {
     }
 
     if let policy = authenticationPolicy {
-      if #available(macOS 10.10, *) {
-        var error: Unmanaged<CFError>?
-        guard let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, SecAccessControlCreateFlags(rawValue: CFOptionFlags(policy.rawValue)), &error) else {
-          if let error = error?.takeUnretainedValue() {
-            return (attributes, error.error)
-          }
-
-          return (attributes, Status.unexpectedError)
+      var error: Unmanaged<CFError>?
+      guard let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, SecAccessControlCreateFlags(rawValue: CFOptionFlags(policy.rawValue)), &error) else {
+        if let error = error?.takeUnretainedValue() {
+          return (attributes, error.error)
         }
-        attributes[cf.AttributeAccessControl] = accessControl
-      } else {
-        print("Unavailable 'Touch ID integration' on macOS versions prior to 10.10.")
+
+        return (attributes, Status.unexpectedError)
       }
+      attributes[cf.AttributeAccessControl] = accessControl
     } else {
       attributes[cf.AttributeAccessible] = accessibility.rawValue
     }
@@ -1519,34 +1344,19 @@ extension AuthenticationType: RawRepresentable, CustomStringConvertible {
 
 extension Accessibility: RawRepresentable, CustomStringConvertible {
   public init?(rawValue: String) {
-    if #available(macOS 10.10, *) {
-      switch rawValue {
-      case String(kSecAttrAccessibleWhenUnlocked):
-        self = .whenUnlocked
-      case String(kSecAttrAccessibleAfterFirstUnlock):
-        self = .afterFirstUnlock
-      case String(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly):
-        self = .whenPasscodeSetThisDeviceOnly
-      case String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly):
-        self = .whenUnlockedThisDeviceOnly
-      case String(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly):
-        self = .afterFirstUnlockThisDeviceOnly
-      default:
-        return nil
-      }
-    } else {
-      switch rawValue {
-      case String(kSecAttrAccessibleWhenUnlocked):
-        self = .whenUnlocked
-      case String(kSecAttrAccessibleAfterFirstUnlock):
-        self = .afterFirstUnlock
-      case String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly):
-        self = .whenUnlockedThisDeviceOnly
-      case String(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly):
-        self = .afterFirstUnlockThisDeviceOnly
-      default:
-        return nil
-      }
+    switch rawValue {
+    case String(kSecAttrAccessibleWhenUnlocked):
+      self = .whenUnlocked
+    case String(kSecAttrAccessibleAfterFirstUnlock):
+      self = .afterFirstUnlock
+    case String(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly):
+      self = .whenPasscodeSetThisDeviceOnly
+    case String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly):
+      self = .whenUnlockedThisDeviceOnly
+    case String(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly):
+      self = .afterFirstUnlockThisDeviceOnly
+    default:
+      return nil
     }
   }
 
@@ -1557,11 +1367,7 @@ extension Accessibility: RawRepresentable, CustomStringConvertible {
     case .afterFirstUnlock:
       return String(kSecAttrAccessibleAfterFirstUnlock)
     case .whenPasscodeSetThisDeviceOnly:
-      if #available(macOS 10.10, *) {
-        return String(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly)
-      } else {
-        fatalError("'Accessibility.WhenPasscodeSetThisDeviceOnly' is not available on this version of OS.")
-      }
+      return String(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly)
     case .whenUnlockedThisDeviceOnly:
       return String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly)
     case .afterFirstUnlockThisDeviceOnly:
