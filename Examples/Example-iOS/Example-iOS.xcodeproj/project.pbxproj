@@ -7,12 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		14DAEE961A51E1BE0070B77E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAEE951A51E1BE0070B77E /* AppDelegate.swift */; };
-		14DAEE9B1A51E1BE0070B77E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 14DAEE991A51E1BE0070B77E /* Main.storyboard */; };
+		14DAEE961A51E1BE0070B77E /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAEE951A51E1BE0070B77E /* ExampleApp.swift */; };
 		14DAEE9D1A51E1BE0070B77E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14DAEE9C1A51E1BE0070B77E /* Images.xcassets */; };
-		14DAEEA01A51E1BE0070B77E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 14DAEE9E1A51E1BE0070B77E /* LaunchScreen.xib */; };
-		14DAEEB71A51E2690070B77E /* AccountsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAEEB51A51E2690070B77E /* AccountsViewController.swift */; };
-		14DAEEB81A51E2690070B77E /* InputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAEEB61A51E2690070B77E /* InputViewController.swift */; };
+		14DAEEB71A51E2690070B77E /* AccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAEEB51A51E2690070B77E /* AccountsView.swift */; };
+		14DAEEB81A51E2690070B77E /* AddAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAEEB61A51E2690070B77E /* AddAccountView.swift */; };
 		14DAEEC91A51E2D00070B77E /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DAEEC11A51E2A60070B77E /* KeychainAccess.framework */; };
 		14DAEECB1A51E2E10070B77E /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 14DAEEC11A51E2A60070B77E /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -58,12 +56,10 @@
 		145652E11D898BB9006E8D0E /* Example-iOS.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Example-iOS.entitlements"; sourceTree = "<group>"; };
 		14DAEE901A51E1BE0070B77E /* Example-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Example-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		14DAEE941A51E1BE0070B77E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		14DAEE951A51E1BE0070B77E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		14DAEE9A1A51E1BE0070B77E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		14DAEE951A51E1BE0070B77E /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		14DAEE9C1A51E1BE0070B77E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		14DAEE9F1A51E1BE0070B77E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		14DAEEB51A51E2690070B77E /* AccountsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountsViewController.swift; sourceTree = "<group>"; };
-		14DAEEB61A51E2690070B77E /* InputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputViewController.swift; sourceTree = "<group>"; };
+		14DAEEB51A51E2690070B77E /* AccountsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountsView.swift; sourceTree = "<group>"; };
+		14DAEEB61A51E2690070B77E /* AddAccountView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddAccountView.swift; sourceTree = "<group>"; };
 		14DAEEB91A51E2A60070B77E /* KeychainAccess.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KeychainAccess.xcodeproj; path = ../../Lib/KeychainAccess.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,11 +95,9 @@
 		14DAEE921A51E1BE0070B77E /* Example-iOS */ = {
 			isa = PBXGroup;
 			children = (
-				14DAEE951A51E1BE0070B77E /* AppDelegate.swift */,
-				14DAEEB51A51E2690070B77E /* AccountsViewController.swift */,
-				14DAEEB61A51E2690070B77E /* InputViewController.swift */,
-				14DAEE991A51E1BE0070B77E /* Main.storyboard */,
-				14DAEE9E1A51E1BE0070B77E /* LaunchScreen.xib */,
+				14DAEE951A51E1BE0070B77E /* ExampleApp.swift */,
+				14DAEEB51A51E2690070B77E /* AccountsView.swift */,
+				14DAEEB61A51E2690070B77E /* AddAccountView.swift */,
 				14DAEE9C1A51E1BE0070B77E /* Images.xcassets */,
 				14DAEE931A51E1BE0070B77E /* Supporting Files */,
 			);
@@ -220,8 +214,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				14DAEE9B1A51E1BE0070B77E /* Main.storyboard in Resources */,
-				14DAEEA01A51E1BE0070B77E /* LaunchScreen.xib in Resources */,
 				14DAEE9D1A51E1BE0070B77E /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -233,32 +225,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				14DAEEB81A51E2690070B77E /* InputViewController.swift in Sources */,
-				14DAEEB71A51E2690070B77E /* AccountsViewController.swift in Sources */,
-				14DAEE961A51E1BE0070B77E /* AppDelegate.swift in Sources */,
+				14DAEEB81A51E2690070B77E /* AddAccountView.swift in Sources */,
+				14DAEEB71A51E2690070B77E /* AccountsView.swift in Sources */,
+				14DAEE961A51E1BE0070B77E /* ExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		14DAEE991A51E1BE0070B77E /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				14DAEE9A1A51E1BE0070B77E /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		14DAEE9E1A51E1BE0070B77E /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				14DAEE9F1A51E1BE0070B77E /* Base */,
-			);
-			name = LaunchScreen.xib;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		14DAEEAD1A51E1BE0070B77E /* Debug */ = {
