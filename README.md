@@ -550,6 +550,8 @@ _See [iOS Example Project](Examples/Example-iOS) as reference._
 
 Open `KeychainAccess.xcworkspace` and run the `KeychainAccessTests` scheme on an iOS simulator — no development team is needed there. Access groups used by the tests are resolved from the test host's entitlements at runtime.
 
+Before committing, run `scripts/check.sh`: it builds the library for every platform, the tests and the Example app with warnings treated as errors, and runs the tests on an iOS simulator.
+
 To run the tests on a device or on macOS, the test host must be signed with your team. Create a git-ignored `Lib/Configurations/Local.xcconfig`:
 
 ```
