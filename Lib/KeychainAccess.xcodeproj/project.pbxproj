@@ -11,7 +11,7 @@
 		140F197B1A49D89200B0016A /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140F197A1A49D89200B0016A /* Keychain.swift */; };
 		142EDA851BCB505F00A32149 /* ErrorTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142EDA841BCB505F00A32149 /* ErrorTypeTests.swift */; };
 		148F9D4A1BCB4118006EDF48 /* EnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148F9D491BCB4118006EDF48 /* EnumTests.swift */; };
-		14A630181D3293C700809B3F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14A630171D3293C700809B3F /* AppDelegate.swift */; };
+		14A630181D3293C700809B3F /* TestHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14A630171D3293C700809B3F /* TestHostApp.swift */; };
 		14A6301F1D3293C700809B3F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14A6301E1D3293C700809B3F /* Assets.xcassets */; };
 		14C3A6781D32BF9C00349459 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 140F195C1A49D79400B0016A /* KeychainAccess.framework */; };
 		14C3A6791D32BF9C00349459 /* KeychainAccess.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 140F195C1A49D79400B0016A /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -68,9 +68,8 @@
 		148E44EB1BF9EEB3004FFEC1 /* KeychainAccess.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = KeychainAccess.xcconfig; path = Configurations/KeychainAccess.xcconfig; sourceTree = "<group>"; };
 		148F9D491BCB4118006EDF48 /* EnumTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnumTests.swift; sourceTree = "<group>"; };
 		14A630151D3293C700809B3F /* TestHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		14A630171D3293C700809B3F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		14A630171D3293C700809B3F /* TestHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHostApp.swift; sourceTree = "<group>"; };
 		14A6301E1D3293C700809B3F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		14A630231D3293C700809B3F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		14F0C1961D3295C4007DCDDB /* TestHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TestHost.entitlements; sourceTree = "<group>"; };
 		14F0C1981D329832007DCDDB /* TestHost.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = TestHost.xcconfig; path = Configurations/TestHost.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -156,9 +155,8 @@
 		14A630161D3293C700809B3F /* TestHost */ = {
 			isa = PBXGroup;
 			children = (
-				14A630171D3293C700809B3F /* AppDelegate.swift */,
+				14A630171D3293C700809B3F /* TestHostApp.swift */,
 				14A6301E1D3293C700809B3F /* Assets.xcassets */,
-				14A630231D3293C700809B3F /* Info.plist */,
 				14F0C1961D3295C4007DCDDB /* TestHost.entitlements */,
 			);
 			path = TestHost;
@@ -323,7 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				14A630181D3293C700809B3F /* AppDelegate.swift in Sources */,
+				14A630181D3293C700809B3F /* TestHostApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

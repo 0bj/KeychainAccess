@@ -3,7 +3,10 @@ TARGETED_DEVICE_FAMILY = 1,2,3;
 SUPPORTS_MACCATALYST = YES;
 
 COPY_PHASE_STRIP = NO;
-INFOPLIST_FILE = TestHost/Info.plist;
+GENERATE_INFOPLIST_FILE = YES;
+INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+MARKETING_VERSION = 1.0;
 PRODUCT_NAME = $(TARGET_NAME);
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 ASSETCATALOG_COMPILER_APPICON_NAME[sdk=appletv*] = ;
@@ -14,10 +17,6 @@ PRODUCT_BUNDLE_IDENTIFIER = io.github.0bj.KeychainAccess.TestHost;
 CODE_SIGN_ENTITLEMENTS = TestHost/TestHost.entitlements;
 CODE_SIGN_STYLE = Automatic;
 CODE_SIGN_IDENTITY = Apple Development;
-
-PRINCIPAL_CLASS[sdk=iphone*] = UIApplication;
-PRINCIPAL_CLASS[sdk=appletv*] = UIApplication;
-PRINCIPAL_CLASS[sdk=macosx*] = NSApplication;
 
 LD_RUNPATH_SEARCH_PATHS[sdk=iphone*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks;
 LD_RUNPATH_SEARCH_PATHS[sdk=appletv*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks;

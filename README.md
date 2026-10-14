@@ -548,13 +548,13 @@ _See [iOS Example Project](Examples/Example-iOS) as reference._
 
 ## Development
 
-Open `KeychainAccess.xcworkspace`. Keychain tests need a signed test host with the keychain sharing entitlement, so create a git-ignored `Lib/Configurations/Local.xcconfig` with your team:
+Open `KeychainAccess.xcworkspace` and run the `KeychainAccessTests` scheme on an iOS simulator — no development team is needed there. Access groups used by the tests are resolved from the test host's entitlements at runtime.
+
+To run the tests on a device or on macOS, the test host must be signed with your team. Create a git-ignored `Lib/Configurations/Local.xcconfig`:
 
 ```
 DEVELOPMENT_TEAM = XXXXXXXXXX;
 ```
-
-Then run the `KeychainAccessTests` scheme. Access groups used by the tests are resolved from your team at runtime.
 
 ## Author
 
