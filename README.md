@@ -539,6 +539,16 @@ _See [iOS Example Project](https://github.com/kishikawakatsumi/KeychainAccess/tr
 
 <img src="https://github.com/kishikawakatsumi/KeychainAccess/assets/40610/b7a46cfb-714d-47d5-84ea-6a80f640e03d" width="800px" />
 
+## Development
+
+Open `KeychainAccess.xcworkspace`. Keychain tests need a signed test host with the keychain sharing entitlement, so create a git-ignored `Lib/Configurations/Local.xcconfig` with your team:
+
+```
+DEVELOPMENT_TEAM = XXXXXXXXXX;
+```
+
+Then run the `KeychainAccessTests` scheme. Access groups used by the tests are resolved from your team at runtime.
+
 ## Author
 
 kishikawa katsumi, kishikawakatsumi@mac.com

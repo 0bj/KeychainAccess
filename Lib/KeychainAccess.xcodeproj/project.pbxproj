@@ -235,20 +235,17 @@
 				TargetAttributes = {
 					140F195B1A49D79400B0016A = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = 27AEDK3C9F;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					140F19661A49D79500B0016A = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = 27AEDK3C9F;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 14A630141D3293C700809B3F;
 					};
 					14A630141D3293C700809B3F = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 27AEDK3C9F;
 						LastSwiftMigration = 1020;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -357,11 +354,11 @@
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				TVOS_DEPLOYMENT_TARGET = 16.6;
-				WATCHOS_DEPLOYMENT_TARGET = 10.6;
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
@@ -371,11 +368,11 @@
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				TVOS_DEPLOYMENT_TARGET = 16.6;
-				WATCHOS_DEPLOYMENT_TARGET = 10.6;
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -384,10 +381,10 @@
 			baseConfigurationReference = 148E44EB1BF9EEB3004FFEC1 /* KeychainAccess.xcconfig */;
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
-				TVOS_DEPLOYMENT_TARGET = 16.6;
-				WATCHOS_DEPLOYMENT_TARGET = 10.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
@@ -396,10 +393,10 @@
 			baseConfigurationReference = 148E44EB1BF9EEB3004FFEC1 /* KeychainAccess.xcconfig */;
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
-				TVOS_DEPLOYMENT_TARGET = 16.6;
-				WATCHOS_DEPLOYMENT_TARGET = 10.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -409,7 +406,7 @@
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
 			};
 			name = Debug;
@@ -420,7 +417,7 @@
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
 			};
 			name = Release;
@@ -429,7 +426,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14F0C1981D329832007DCDDB /* TestHost.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
 				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Debug;
@@ -438,7 +434,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14F0C1981D329832007DCDDB /* TestHost.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
 				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Release;

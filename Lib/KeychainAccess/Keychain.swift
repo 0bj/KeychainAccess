@@ -25,18 +25,21 @@
 
 import Foundation
 import Security
+import os
 #if os(iOS) || os(macOS)
 import LocalAuthentication
 #endif
 
 public let KeychainAccessErrorDomain = "com.kishikawakatsumi.KeychainAccess.error"
 
-public enum ItemClass {
+private let logger = Logger(subsystem: "com.kishikawakatsumi.KeychainAccess", category: "Keychain")
+
+public enum ItemClass: Sendable {
   case genericPassword
   case internetPassword
 }
 
-public enum ProtocolType {
+public enum ProtocolType: Sendable {
   case ftp
   case ftpAccount
   case http
@@ -70,7 +73,7 @@ public enum ProtocolType {
   case pop3S
 }
 
-public enum AuthenticationType {
+public enum AuthenticationType: Sendable {
   case ntlm
   case msn
   case dpa
@@ -81,7 +84,7 @@ public enum AuthenticationType {
   case `default`
 }
 
-public enum Accessibility {
+public enum Accessibility: Sendable {
   /**
    Item data can only be accessed
    while the device is unlocked. This is recommended for items that only
@@ -140,7 +143,7 @@ public enum Accessibility {
  If the key kSecUseAuthenticationUI not provided then kSecUseAuthenticationUIAllow
  is used as default.
  */
-public enum AuthenticationUI {
+public enum AuthenticationUI: Sendable {
   /**
    Specifies that authenticate UI can appear.
    */
@@ -225,7 +228,8 @@ public struct AuthenticationPolicy: Sendable, OptionSet {
   }
 }
 
-public struct Attributes {
+// Holds an immutable snapshot of Security framework attribute values (property-list types).
+public struct Attributes: @unchecked Sendable {
   private let cf = CFStringWrap()
 
   public var `class`: String? {
@@ -324,7 +328,8 @@ public struct Attributes {
   }
 }
 
-public final class Keychain {
+// Immutable: every modifier returns a new instance, and SecItem APIs are thread-safe.
+public final class Keychain: @unchecked Sendable {
   private let cf = CFStringWrap()
 
   public var itemClass: ItemClass {
@@ -409,7 +414,10 @@ public final class Keychain {
   }
 
   public convenience init(server: String, protocolType: ProtocolType, accessGroup: String? = nil, authenticationType: AuthenticationType = .default) {
-    self.init(server: URL(string: server)!, protocolType: protocolType, accessGroup: accessGroup, authenticationType: authenticationType)
+    guard let url = URL(string: server) else {
+      preconditionFailure("Invalid server URL: \(server)")
+    }
+    self.init(server: url, protocolType: protocolType, accessGroup: accessGroup, authenticationType: authenticationType)
   }
 
   public convenience init(server: URL, protocolType: ProtocolType, accessGroup: String? = nil, authenticationType: AuthenticationType = .default) {
@@ -702,9 +710,9 @@ public final class Keychain {
         return prettify(itemClass: itemClass, items: items).map {
           switch itemClass {
           case .genericPassword:
-            return (($0["service"] ?? "") as! String, ($0["key"] ?? "") as! String)
+            return ($0["service"] as? String ?? "", $0["key"] as? String ?? "")
           case .internetPassword:
-            return (($0["server"] ?? "") as! String, ($0["key"] ?? "") as! String)
+            return ($0["server"] as? String ?? "", $0["key"] as? String ?? "")
           }
         }
       }
@@ -845,7 +853,7 @@ public final class Keychain {
   fileprivate class func securityError(status: OSStatus) -> Error {
     let error = Status(status: status)
     if error != .userCanceled {
-      print("OSStatus error:[\(error.errorCode)] \(error.description)")
+      logger.error("OSStatus error:[\(error.errorCode)] \(error.description, privacy: .public)")
     }
 
     return error

@@ -42,24 +42,24 @@ jobs:
             -destination '${{ matrix.destination }}' \
             CODE_SIGNING_ALLOWED=NO
 
-  test:
-    name: Test (iOS Simulator)
+  build-tests:
+    # Running keychain tests requires a signed test host (see README), so CI only compiles them.
+    name: Build tests (${{ matrix.name }})
     runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: iOS
+            destination: generic/platform=iOS Simulator
+          - name: tvOS
+            destination: generic/platform=tvOS Simulator
     steps:
       - uses: actions/checkout@v4
-      - name: Test
+      - name: Build for testing
         run: |
           set -o pipefail
-          xcodebuild test \
+          xcodebuild build-for-testing \
             -workspace KeychainAccess.xcworkspace \
             -scheme KeychainAccessTests \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 17 Pro' \
-            -test-timeouts-enabled YES \
-            -default-test-execution-time-allowance 60 \
-            -resultBundlePath TestResults.xcresult \
-            CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER=
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: TestResults
-          path: TestResults.xcresult
+            -destination '${{ matrix.destination }}'

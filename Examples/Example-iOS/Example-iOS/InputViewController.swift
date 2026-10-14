@@ -42,14 +42,10 @@ class InputViewController: UITableViewController {
         tableView.estimatedRowHeight = 44.0
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
     // MARK:
 
     @IBAction func cancelAction(sender: UIBarButtonItem) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true)
     }
 
     @IBAction func saveAction(sender: UIBarButtonItem) {
@@ -59,22 +55,16 @@ class InputViewController: UITableViewController {
         } else {
             keychain = Keychain()
         }
-        keychain[usernameField.text!] = passwordField.text
+        if let username = usernameField.text {
+            keychain[username] = passwordField.text
+        }
 
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true)
     }
 
     @IBAction func editingChanged(sender: UITextField) {
-        switch (usernameField.text, passwordField.text) {
-        case let (username?, password?):
-            saveButton.isEnabled = !username.isEmpty && !password.isEmpty
-        case (_?, nil):
-            saveButton.isEnabled = false
-        case (nil, _?):
-            saveButton.isEnabled = false
-        case (nil, nil):
-            saveButton.isEnabled = false
-        }
+        let username = usernameField.text ?? ""
+        let password = passwordField.text ?? ""
+        saveButton.isEnabled = !username.isEmpty && !password.isEmpty
     }
-
 }

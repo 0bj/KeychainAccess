@@ -12,15 +12,15 @@ import PackageDescription
 let package = Package(
     name: "KeychainAccess",
     platforms: [
-      .macOS(.v15), .iOS(.v16), .tvOS(.v16), .watchOS(.v10)
+        .macOS(.v15), .iOS(.v16), .tvOS(.v16), .watchOS(.v10)
     ],
     products: [
         .library(name: "KeychainAccess", targets: ["KeychainAccess"])
     ],
     targets: [
         .target(
-          name: "KeychainAccess",
-          path: "Lib/KeychainAccess",
-          linkerSettings: [.unsafeFlags(["-Xlinker", "-no_application_extension"])])
+            name: "KeychainAccess",
+            path: "Lib/KeychainAccess"
+        )
     ]
 )

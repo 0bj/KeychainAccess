@@ -42,4 +42,7 @@ VERSION_INFO_PREFIX = "";
 CODE_SIGN_IDENTITY = ;
 DEVELOPMENT_TEAM = ;
 
+// Optional, git-ignored overrides (e.g. DEVELOPMENT_TEAM = XXXXXXXXXX;) for running keychain tests locally.
+#include? "Local.xcconfig"
+
 SWIFT_VERSION = 6.0;
