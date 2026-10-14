@@ -45,10 +45,6 @@ class KeychainAccessTests: XCTestCase {
         do { try Keychain().removeAll() } catch {}
     }
 
-    override func tearDown() {
-        super.tearDown()
-    }
-
     // MARK:
 
     func testGenericPassword() {
@@ -818,15 +814,7 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNil(attributes?.ref)
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
-                #if os(iOS)
                 XCTAssertNotNil(attributes?.accessControl)
-                #else
-                if #available(tvOS 11.3, *) {
-                    XCTAssertNotNil(attributes?.accessControl)
-                } else {
-                    XCTAssertNil(attributes?.accessControl)
-                }
-                #endif
                 let accessGroup: String
                 accessGroup = testHostAccessGroup
                 XCTAssertEqual(attributes?.accessGroup, accessGroup)
@@ -866,15 +854,7 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNil(attributes?.ref)
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
-                #if os(iOS)
                 XCTAssertNotNil(attributes?.accessControl)
-                #else
-                if #available(tvOS 11.3, *) {
-                    XCTAssertNotNil(attributes?.accessControl)
-                } else {
-                    XCTAssertNil(attributes?.accessControl)
-                }
-                #endif
                 let accessGroup: String
                 accessGroup = testHostAccessGroup
                 XCTAssertEqual(attributes?.accessGroup, accessGroup)
@@ -915,15 +895,7 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNil(attributes?.ref)
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
-                #if os(iOS)
                 XCTAssertNotNil(attributes?.accessControl)
-                #else
-                if #available(tvOS 11.3, *) {
-                    XCTAssertNotNil(attributes?.accessControl)
-                } else {
-                    XCTAssertNil(attributes?.accessControl)
-                }
-                #endif
                 let accessGroup: String
                 accessGroup = testHostAccessGroup
                 XCTAssertEqual(attributes?.accessGroup, accessGroup)
@@ -1273,10 +1245,6 @@ class KeychainAccessTests: XCTestCase {
     // MARK:
 
     func testProperties() {
-        guard #available(macOS 10.10, *) else {
-            return
-        }
-
         let keychain = Keychain()
 
         XCTAssertEqual(keychain.synchronizable, false)
@@ -1519,10 +1487,6 @@ class KeychainAccessTests: XCTestCase {
     // MARK:
 
     func testAuthenticationPolicy() {
-        guard #available(iOS 9.0, macOS 10.11, *) else {
-            return
-        }
-
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 

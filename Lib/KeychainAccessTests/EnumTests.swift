@@ -10,14 +10,6 @@ import KeychainAccess
 
 @MainActor
 class EnumTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     func testItemClass() {
         do {
             let itemClass = ItemClass(rawValue: kSecClassGenericPassword as String)
@@ -245,9 +237,6 @@ class EnumTests: XCTestCase {
     }
 
     func testAccessibility() {
-        guard #available(macOS 10.10, *) else {
-            return
-        }
         do {
             let accessibility = Accessibility(rawValue: kSecAttrAccessibleWhenUnlocked as String)
             XCTAssertEqual(accessibility, .whenUnlocked)

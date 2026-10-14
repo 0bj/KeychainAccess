@@ -10,14 +10,6 @@ import KeychainAccess
 
 @MainActor
 class ErrorTypeTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     func testErrorType() {
         do {
             let status = Status(rawValue: errSecSuccess)
