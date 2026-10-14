@@ -10,6 +10,7 @@ import Security
 
 public let KeychainAccessErrorDomain = "io.github.0bj.KeychainAccess.error"
 
+/// Keychain errors: the `OSStatus` codes returned by the Security framework.
 public enum Status: OSStatus, Error {
   case success                            = 0
   case unimplemented                      = -4
@@ -416,16 +417,11 @@ public enum Status: OSStatus, Error {
   case unexpectedError                    = -99999
 }
 
-extension Status: RawRepresentable, CustomStringConvertible {
-
+extension Status: CustomStringConvertible {
   /// Maps `status` to a known case, or `.unexpectedError` if there is none.
   /// Errors thrown by `Keychain` keep unknown codes as `NSOSStatusErrorDomain` errors instead.
   public init(status: OSStatus) {
-    if let mappedStatus = Status(rawValue: status) {
-      self = mappedStatus
-    } else {
-      self = .unexpectedError
-    }
+    self = Status(rawValue: status) ?? .unexpectedError
   }
 
   public var description: String {
@@ -1247,7 +1243,7 @@ extension Status: CustomNSError {
     Int(rawValue)
   }
 
-  public var errorUserInfo: [String : Any] {
+  public var errorUserInfo: [String: Any] {
     [NSLocalizedDescriptionKey: description]
   }
 }

@@ -9,6 +9,7 @@ public import Foundation
 public import Security
 
 // Holds an immutable snapshot of Security framework attribute values (property-list types).
+/// Attributes of a keychain item, as returned by `Keychain.get(_:handler:)` and `subscript(attributes:)`.
 public struct Attributes: @unchecked Sendable {
   private var cf: CFStringWrap { .shared }
 
@@ -106,10 +107,9 @@ public struct Attributes: @unchecked Sendable {
     attributes[key] as? T
   }
 
+  /// The raw value of a Security framework attribute, e.g. `attributes[kSecAttrLabel as String]`.
   public subscript(key: String) -> Any? {
-    get {
-      attributes[key]
-    }
+    attributes[key]
   }
 }
 
