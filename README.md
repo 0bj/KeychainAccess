@@ -85,7 +85,7 @@ keychain[data: "secret"] = try? Data(contentsOf: URL(fileURLWithPath: "secret.bi
 #### set method
 
 ```swift
-keychain.set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
+try keychain.set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
 ```
 
 #### error handling
