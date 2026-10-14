@@ -159,21 +159,21 @@ public struct Attributes: @unchecked Sendable {
   private var cf: CFStringWrap { .shared }
 
   public var `class`: String? {
-    return attributes[cf.Class] as? String
+    value(cf.Class)
   }
   public var data: Data? {
-    return attributes[cf.ValueData] as? Data
+    value(cf.ValueData)
   }
   /// The item reference (`kSecValueRef`), if the keychain returned one.
   public var ref: AnyObject? {
-    return attributes[cf.ValueRef].map { $0 as AnyObject }
+    attributes[cf.ValueRef].map { $0 as AnyObject }
   }
   public var persistentRef: Data? {
-    return attributes[cf.ValuePersistentRef] as? Data
+    value(cf.ValuePersistentRef)
   }
 
   public var accessible: String? {
-    return attributes[cf.AttributeAccessible] as? String
+    value(cf.AttributeAccessible)
   }
   public var accessControl: SecAccessControl? {
     if let accessControl = attributes[cf.AttributeAccessControl] {
@@ -182,64 +182,64 @@ public struct Attributes: @unchecked Sendable {
     return nil
   }
   public var accessGroup: String? {
-    return attributes[cf.AttributeAccessGroup] as? String
+    value(cf.AttributeAccessGroup)
   }
   public var synchronizable: Bool? {
-    return attributes[cf.AttributeSynchronizable] as? Bool
+    value(cf.AttributeSynchronizable)
   }
   public var creationDate: Date? {
-    return attributes[cf.AttributeCreationDate] as? Date
+    value(cf.AttributeCreationDate)
   }
   public var modificationDate: Date? {
-    return attributes[cf.AttributeModificationDate] as? Date
+    value(cf.AttributeModificationDate)
   }
   public var attributeDescription: String? {
-    return attributes[cf.AttributeDescription] as? String
+    value(cf.AttributeDescription)
   }
   public var comment: String? {
-    return attributes[cf.AttributeComment] as? String
+    value(cf.AttributeComment)
   }
   public var creator: String? {
-    return attributes[cf.AttributeCreator] as? String
+    value(cf.AttributeCreator)
   }
   public var type: String? {
-    return attributes[cf.AttributeType] as? String
+    value(cf.AttributeType)
   }
   public var label: String? {
-    return attributes[cf.AttributeLabel] as? String
+    value(cf.AttributeLabel)
   }
   public var isInvisible: Bool? {
-    return attributes[cf.AttributeIsInvisible] as? Bool
+    value(cf.AttributeIsInvisible)
   }
   public var isNegative: Bool? {
-    return attributes[cf.AttributeIsNegative] as? Bool
+    value(cf.AttributeIsNegative)
   }
   public var account: String? {
-    return attributes[cf.AttributeAccount] as? String
+    value(cf.AttributeAccount)
   }
   public var service: String? {
-    return attributes[cf.AttributeService] as? String
+    value(cf.AttributeService)
   }
   public var generic: Data? {
-    return attributes[cf.AttributeGeneric] as? Data
+    value(cf.AttributeGeneric)
   }
   public var securityDomain: String? {
-    return attributes[cf.AttributeSecurityDomain] as? String
+    value(cf.AttributeSecurityDomain)
   }
   public var server: String? {
-    return attributes[cf.AttributeServer] as? String
+    value(cf.AttributeServer)
   }
   public var `protocol`: String? {
-    return attributes[cf.AttributeProtocol] as? String
+    value(cf.AttributeProtocol)
   }
   public var authenticationType: String? {
-    return attributes[cf.AttributeAuthenticationType] as? String
+    value(cf.AttributeAuthenticationType)
   }
   public var port: Int? {
-    return attributes[cf.AttributePort] as? Int
+    value(cf.AttributePort)
   }
   public var path: String? {
-    return attributes[cf.AttributePath] as? String
+    value(cf.AttributePath)
   }
 
   fileprivate let attributes: [String: Any]
@@ -248,9 +248,13 @@ public struct Attributes: @unchecked Sendable {
     self.attributes = attributes
   }
 
+  private func value<T>(_ key: String) -> T? {
+    attributes[key] as? T
+  }
+
   public subscript(key: String) -> Any? {
     get {
-      return attributes[key]
+      attributes[key]
     }
   }
 }
@@ -264,56 +268,56 @@ public final class Keychain: @unchecked Sendable {
   private var cf: CFStringWrap { .shared }
 
   public var itemClass: ItemClass {
-    return options.itemClass
+    options.itemClass
   }
 
   public var service: String {
-    return options.service
+    options.service
   }
 
   // This attribute (kSecAttrAccessGroup) applies to macOS keychain items only if you also set a value of true for the
   // kSecUseDataProtectionKeychain key, the kSecAttrSynchronizable key, or both.
   public var accessGroup: String? {
-    return options.accessGroup
+    options.accessGroup
   }
 
   /// The server URL of an internet password keychain, `nil` for a generic password keychain.
   public var server: URL? {
-    return options.server
+    options.server
   }
 
   /// The protocol of an internet password keychain, `nil` for a generic password keychain.
   public var protocolType: ProtocolType? {
-    return options.protocolType
+    options.protocolType
   }
 
   public var authenticationType: AuthenticationType {
-    return options.authenticationType
+    options.authenticationType
   }
 
   public var accessibility: Accessibility {
-    return options.accessibility
+    options.accessibility
   }
 
   public var authenticationPolicy: AuthenticationPolicy? {
-    return options.authenticationPolicy
+    options.authenticationPolicy
   }
 
   public var synchronizable: Bool {
-    return options.synchronizable
+    options.synchronizable
   }
 
   public var label: String? {
-    return options.label
+    options.label
   }
 
   public var comment: String? {
-    return options.comment
+    options.comment
   }
 
 #if os(iOS) || os(macOS)
   public var authenticationContext: LAContext? {
-    return options.authenticationContext
+    options.authenticationContext
   }
 #endif
 
@@ -373,49 +377,55 @@ public final class Keychain: @unchecked Sendable {
     options = opts
   }
 
+  private func with(_ change: (inout Options) -> Void) -> Keychain {
+    var options = self.options
+    change(&options)
+    return Keychain(options)
+  }
+
   // MARK: - Configuration
 
   /// Returns a keychain that stores items with `accessibility`.
   public func accessibility(_ accessibility: Accessibility) -> Keychain {
-    var options = self.options
-    options.accessibility = accessibility
-    return Keychain(options)
+    with { options in
+      options.accessibility = accessibility
+    }
   }
 
   /// Returns a keychain that protects stored items with `authenticationPolicy` (e.g. biometry or passcode).
   public func accessibility(_ accessibility: Accessibility, authenticationPolicy: AuthenticationPolicy) -> Keychain {
-    var options = self.options
-    options.accessibility = accessibility
-    options.authenticationPolicy = authenticationPolicy
-    return Keychain(options)
+    with { options in
+      options.accessibility = accessibility
+      options.authenticationPolicy = authenticationPolicy
+    }
   }
 
   /// Returns a keychain whose stored items are (or are not) synchronized through iCloud Keychain.
   public func synchronizable(_ synchronizable: Bool) -> Keychain {
-    var options = self.options
-    options.synchronizable = synchronizable
-    return Keychain(options)
+    with { options in
+      options.synchronizable = synchronizable
+    }
   }
 
   /// Returns a keychain that sets `label` on stored items.
   public func label(_ label: String) -> Keychain {
-    var options = self.options
-    options.label = label
-    return Keychain(options)
+    with { options in
+      options.label = label
+    }
   }
 
   /// Returns a keychain that sets `comment` on stored items.
   public func comment(_ comment: String) -> Keychain {
-    var options = self.options
-    options.comment = comment
-    return Keychain(options)
+    with { options in
+      options.comment = comment
+    }
   }
 
   /// Returns a keychain that adds raw Security framework `attributes` to stored items.
   public func attributes(_ attributes: [String: Any]) -> Keychain {
-    var options = self.options
-    attributes.forEach { options.attributes.updateValue($1, forKey: $0) }
-    return Keychain(options)
+    with { options in
+      attributes.forEach { options.attributes.updateValue($1, forKey: $0) }
+    }
   }
 
 #if os(iOS) || os(macOS)
@@ -423,9 +433,9 @@ public final class Keychain: @unchecked Sendable {
   ///
   /// Set `LAContext.localizedReason` to customize the authentication prompt.
   public func authenticationContext(_ authenticationContext: LAContext) -> Keychain {
-    var options = self.options
-    options.authenticationContext = authenticationContext
-    return Keychain(options)
+    with { options in
+      options.authenticationContext = authenticationContext
+    }
   }
 #endif
 
@@ -436,14 +446,14 @@ public final class Keychain: @unchecked Sendable {
   /// - Parameter ignoringAttributeSynchronizable: When `true`, matches both synchronizable and local items;
   ///   otherwise only items matching `synchronizable`.
   public func get(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> String? {
-    return try getString(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
+    try getString(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
   }
 
   /// Returns the UTF-8 string stored for `key`, or `nil` if there is none.
   ///
   /// - Throws: `Status.conversionError` if the stored data isn't UTF-8.
   public func getString(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> String? {
-    guard let data = try getData(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable) else  {
+    guard let data = try getData(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable) else {
       return nil
     }
     guard let string = String(data: data, encoding: .utf8) else {
@@ -537,7 +547,7 @@ public final class Keychain: @unchecked Sendable {
   /// The string stored for `key`. Assigning `nil` removes the item. Errors are ignored; use `get`/`set` to handle them.
   public subscript(key: String) -> String? {
     get {
-      return try? get(key)
+      try? get(key)
     }
 
     set {
@@ -552,7 +562,7 @@ public final class Keychain: @unchecked Sendable {
   /// The string stored for `key`. Same as `subscript(_:)`.
   public subscript(string key: String) -> String? {
     get {
-      return self[key]
+      self[key]
     }
 
     set {
@@ -563,7 +573,7 @@ public final class Keychain: @unchecked Sendable {
   /// The data stored for `key`. Assigning `nil` removes the item. Errors are ignored.
   public subscript(data key: String) -> Data? {
     get {
-      return try? getData(key)
+      try? getData(key)
     }
 
     set {
@@ -578,7 +588,7 @@ public final class Keychain: @unchecked Sendable {
   /// The attributes of the item for `key`, or `nil` if there is none or reading failed.
   public subscript(attributes key: String) -> Attributes? {
     get {
-      return try? get(key) { $0 }
+      try? get(key) { $0 }
     }
   }
 
@@ -652,7 +662,7 @@ public final class Keychain: @unchecked Sendable {
 
   /// Returns the keys of all items of this keychain.
   public func allKeys() -> [String] {
-    return type(of: self).prettify(itemClass: itemClass, items: items()).compactMap { $0["key"] as? String }
+    type(of: self).prettify(itemClass: itemClass, items: items()).compactMap { $0["key"] as? String }
   }
 
   /// Returns a readable description of all items of `itemClass` the app can access.
@@ -672,7 +682,7 @@ public final class Keychain: @unchecked Sendable {
 
   /// Returns a readable description of all items of this keychain.
   public func allItems() -> [[String: Any]] {
-    return type(of: self).prettify(itemClass: itemClass, items: items())
+    type(of: self).prettify(itemClass: itemClass, items: items())
   }
 
   // MARK: - Private
@@ -772,7 +782,7 @@ public final class Keychain: @unchecked Sendable {
 
   @discardableResult
   fileprivate func securityError(status: OSStatus) -> any Error {
-    return type(of: self).securityError(status: status)
+    type(of: self).securityError(status: status)
   }
 
   fileprivate func check(_ status: OSStatus) throws {
@@ -872,7 +882,7 @@ extension Keychain: CustomStringConvertible, CustomDebugStringConvertible {
   }
 
   public var debugDescription: String {
-    return "\(items())"
+    "\(items())"
   }
 }
 
@@ -953,11 +963,11 @@ extension Options {
 
 extension Attributes: CustomStringConvertible, CustomDebugStringConvertible {
   public var description: String {
-    return "\(attributes)"
+    "\(attributes)"
   }
 
   public var debugDescription: String {
-    return description
+    description
   }
 }
 
@@ -2547,10 +2557,10 @@ extension Status: CustomNSError {
   public static let errorDomain = KeychainAccessErrorDomain
 
   public var errorCode: Int {
-    return Int(rawValue)
+    Int(rawValue)
   }
 
   public var errorUserInfo: [String : Any] {
-    return [NSLocalizedDescriptionKey: description]
+    [NSLocalizedDescriptionKey: description]
   }
 }
