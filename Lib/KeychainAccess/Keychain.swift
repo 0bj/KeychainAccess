@@ -520,35 +520,15 @@ public final class Keychain: @unchecked Sendable {
   public func set(_ value: Data, key: String, ignoringAttributeSynchronizable: Bool = true) throws {
     var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.AttributeAccount] = key
-    var status = SecItemCopyMatching(query as CFDictionary, nil)
+
+    let status = SecItemCopyMatching(query as CFDictionary, nil)
     switch status {
     case errSecSuccess, errSecInteractionNotAllowed:
-      var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
-      query[cf.AttributeAccount] = key
-
-      var (attributes, error) = options.attributes(key: nil, value: value)
-      if let error = error {
-        throw error
-      }
-
-      options.attributes.forEach { attributes.updateValue($1, forKey: $0) }
-
-      status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
-      if status != errSecSuccess {
-        throw securityError(status: status)
-      }
+      let attributes = try options.attributes(key: nil, value: value)
+      try check(SecItemUpdate(query as CFDictionary, attributes as CFDictionary))
     case errSecItemNotFound:
-      var (attributes, error) = options.attributes(key: key, value: value)
-      if let error = error {
-        throw error
-      }
-
-      options.attributes.forEach { attributes.updateValue($1, forKey: $0) }
-
-      status = SecItemAdd(attributes as CFDictionary, nil)
-      if status != errSecSuccess {
-        throw securityError(status: status)
-      }
+      let attributes = try options.attributes(key: key, value: value)
+      try check(SecItemAdd(attributes as CFDictionary, nil))
     default:
       throw securityError(status: status)
     }
@@ -561,14 +541,10 @@ public final class Keychain: @unchecked Sendable {
     }
 
     set {
-      if let value = newValue {
-        do {
-          try set(value, key: key)
-        } catch {}
+      if let newValue {
+        try? set(newValue, key: key)
       } else {
-        do {
-          try remove(key)
-        } catch {}
+        try? remove(key)
       }
     }
   }
@@ -591,14 +567,10 @@ public final class Keychain: @unchecked Sendable {
     }
 
     set {
-      if let value = newValue {
-        do {
-          try set(value, key: key)
-        } catch {}
+      if let newValue {
+        try? set(newValue, key: key)
       } else {
-        do {
-          try remove(key)
-        } catch {}
+        try? remove(key)
       }
     }
   }
@@ -668,36 +640,19 @@ public final class Keychain: @unchecked Sendable {
     query[cf.MatchLimit] = cf.MatchLimitAll
     query[cf.ReturnAttributes] = kCFBooleanTrue
 
-    var result: AnyObject?
-    let status = SecItemCopyMatching(query as CFDictionary, &result)
-
-    switch status {
-    case errSecSuccess:
-      if let items = result as? [[String: Any]] {
-        return prettify(itemClass: itemClass, items: items).map {
-          switch itemClass {
-          case .genericPassword:
-            return ($0["service"] as? String ?? "", $0["key"] as? String ?? "")
-          case .internetPassword:
-            return ($0["server"] as? String ?? "", $0["key"] as? String ?? "")
-          }
-        }
+    return prettify(itemClass: itemClass, items: copyItems(query)).map {
+      switch itemClass {
+      case .genericPassword:
+        return ($0["service"] as? String ?? "", $0["key"] as? String ?? "")
+      case .internetPassword:
+        return ($0["server"] as? String ?? "", $0["key"] as? String ?? "")
       }
-    case errSecItemNotFound:
-      return []
-    default: ()
     }
-
-    securityError(status: status)
-    return []
   }
 
   /// Returns the keys of all items of this keychain.
   public func allKeys() -> [String] {
-    let allItems = type(of: self).prettify(itemClass: itemClass, items: items())
-    let filter: ([String: Any]) -> String? = { $0["key"] as? String }
-
-    return allItems.compactMap(filter)
+    return type(of: self).prettify(itemClass: itemClass, items: items()).compactMap { $0["key"] as? String }
   }
 
   /// Returns a readable description of all items of `itemClass` the app can access.
@@ -712,21 +667,7 @@ public final class Keychain: @unchecked Sendable {
     query[cf.ReturnData] = kCFBooleanTrue
 #endif
 
-    var result: AnyObject?
-    let status = SecItemCopyMatching(query as CFDictionary, &result)
-
-    switch status {
-    case errSecSuccess:
-      if let items = result as? [[String: Any]] {
-        return prettify(itemClass: itemClass, items: items)
-      }
-    case errSecItemNotFound:
-      return []
-    default: ()
-    }
-
-    securityError(status: status)
-    return []
+    return prettify(itemClass: itemClass, items: copyItems(query))
   }
 
   /// Returns a readable description of all items of this keychain.
@@ -744,21 +685,22 @@ public final class Keychain: @unchecked Sendable {
     query[cf.ReturnData] = kCFBooleanTrue
 #endif
 
+    return type(of: self).copyItems(query)
+  }
+
+  /// Returns the items matching `query`, or `[]` if there are none or the query failed (failures are logged).
+  fileprivate class func copyItems(_ query: [String: Any]) -> [[String: Any]] {
     var result: AnyObject?
     let status = SecItemCopyMatching(query as CFDictionary, &result)
-
     switch status {
     case errSecSuccess:
-      if let items = result as? [[String: Any]] {
-        return items
-      }
+      return result as? [[String: Any]] ?? []
     case errSecItemNotFound:
       return []
-    default: ()
+    default:
+      securityError(status: status)
+      return []
     }
-
-    securityError(status: status)
-    return []
   }
 
   fileprivate class func prettify(itemClass: ItemClass, items: [[String: Any]]) -> [[String: Any]] {
@@ -781,15 +723,11 @@ public final class Keychain: @unchecked Sendable {
         if let server = attributes[cf.AttributeServer] as? String {
           item["server"] = server
         }
-        if let proto = attributes[cf.AttributeProtocol] as? String {
-          if let protocolType = ProtocolType(rawValue: proto) {
-            item["protocol"] = protocolType.description
-          }
+        if let proto = attributes[cf.AttributeProtocol] as? String, let protocolType = ProtocolType(rawValue: proto) {
+          item["protocol"] = protocolType.description
         }
-        if let auth = attributes[cf.AttributeAuthenticationType] as? String {
-          if let authenticationType = AuthenticationType(rawValue: auth) {
-            item["authenticationType"] = authenticationType.description
-          }
+        if let auth = attributes[cf.AttributeAuthenticationType] as? String, let authenticationType = AuthenticationType(rawValue: auth) {
+          item["authenticationType"] = authenticationType.description
         }
       }
 
@@ -797,17 +735,11 @@ public final class Keychain: @unchecked Sendable {
         item["key"] = key
       }
       if let data = attributes[cf.ValueData] as? Data {
-        if let text = String(data: data, encoding: .utf8) {
-          item["value"] = text
-        } else  {
-          item["value"] = data
-        }
+        item["value"] = String(data: data, encoding: .utf8) ?? data
       }
 
-      if let accessible = attributes[cf.AttributeAccessible] as? String {
-        if let accessibility = Accessibility(rawValue: accessible) {
-          item["accessibility"] = accessibility.description
-        }
+      if let accessible = attributes[cf.AttributeAccessible] as? String, let accessibility = Accessibility(rawValue: accessible) {
+        item["accessibility"] = accessibility.description
       }
       if let synchronizable = attributes[cf.AttributeSynchronizable] as? Bool {
         item["synchronizable"] = synchronizable ? "true" : "false"
@@ -841,6 +773,12 @@ public final class Keychain: @unchecked Sendable {
   @discardableResult
   fileprivate func securityError(status: OSStatus) -> any Error {
     return type(of: self).securityError(status: status)
+  }
+
+  fileprivate func check(_ status: OSStatus) throws {
+    if status != errSecSuccess {
+      throw securityError(status: status)
+    }
   }
 }
 
@@ -930,13 +868,7 @@ extension Keychain: CustomStringConvertible, CustomDebugStringConvertible {
     if items.isEmpty {
       return "[]"
     }
-    var description = "[\n"
-    for item in items {
-      description += "  "
-      description += "\(item)\n"
-    }
-    description += "]"
-    return description
+    return "[\n" + items.map { "  \($0)\n" }.joined() + "]"
   }
 
   public var debugDescription: String {
@@ -977,7 +909,8 @@ extension Options {
     return query
   }
 
-  func attributes(key: String?, value: Data) -> ([String: Any], (any Error)?) {
+  /// Attributes to add (`key` set) or to update (`key` nil) an item with `value`, including custom `attributes`.
+  func attributes(key: String?, value: Data) throws -> [String: Any] {
     var attributes: [String: Any]
 
     if key != nil {
@@ -1000,10 +933,9 @@ extension Options {
       var error: Unmanaged<CFError>?
       guard let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, SecAccessControlCreateFlags(rawValue: CFOptionFlags(policy.rawValue)), &error) else {
         if let error = error?.takeRetainedValue() {
-          return (attributes, error as any Error)
+          throw error
         }
-
-        return (attributes, Status.unexpectedError)
+        throw Status.unexpectedError
       }
       attributes[cf.AttributeAccessControl] = accessControl
     } else {
@@ -1011,8 +943,9 @@ extension Options {
     }
 
     attributes[cf.AttributeSynchronizable] = synchronizable ? kCFBooleanTrue : kCFBooleanFalse
+    attributes.merge(self.attributes) { $1 }
 
-    return (attributes, nil)
+    return attributes
   }
 }
 
