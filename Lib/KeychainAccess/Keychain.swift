@@ -192,8 +192,9 @@ public struct Attributes: @unchecked Sendable {
   public var data: Data? {
     return attributes[cf.ValueData] as? Data
   }
-  public var ref: Data? {
-    return attributes[cf.ValueRef] as? Data
+  /// The item reference (`kSecValueRef`), if the keychain returned one.
+  public var ref: AnyObject? {
+    return attributes[cf.ValueRef].map { $0 as AnyObject }
   }
   public var persistentRef: Data? {
     return attributes[cf.ValuePersistentRef] as? Data
@@ -318,7 +319,6 @@ public final class Keychain: @unchecked Sendable {
     return options.accessibility
   }
 
-  @available(watchOS, unavailable)
   public var authenticationPolicy: AuthenticationPolicy? {
     return options.authenticationPolicy
   }
@@ -398,7 +398,6 @@ public final class Keychain: @unchecked Sendable {
     return Keychain(options)
   }
 
-  @available(watchOS, unavailable)
   public func accessibility(_ accessibility: Accessibility, authenticationPolicy: AuthenticationPolicy) -> Keychain {
     var options = self.options
     options.accessibility = accessibility
@@ -630,6 +629,10 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Returns whether an item exists for `key`.
+  ///
+  /// Throws `Status.interactionNotAllowed` when the keychain can't be queried right now
+  /// (for example, the device is locked), instead of reporting the item as missing.
   public func contains(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> Bool {
     var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.AttributeAccount] = key
@@ -638,8 +641,6 @@ public final class Keychain: @unchecked Sendable {
     switch status {
     case errSecSuccess:
       return true
-    case errSecInteractionNotAllowed:
-      return false
     case errSecItemNotFound:
       return false
     default:
@@ -806,11 +807,19 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
+  /// Maps an `OSStatus` to `Status`, or to an `NSOSStatusErrorDomain` error that keeps the original code
+  /// when `Status` has no matching case.
   @discardableResult
   fileprivate class func securityError(status: OSStatus) -> Error {
-    let error = Status(status: status)
-    if error != .userCanceled {
-      logger.error("OSStatus error:[\(error.errorCode)] \(error.description, privacy: .public)")
+    let error: Error
+    if let known = Status(rawValue: status) {
+      error = known
+    } else {
+      let message = SecCopyErrorMessageString(status, nil) as String? ?? "Unknown error."
+      error = NSError(domain: NSOSStatusErrorDomain, code: Int(status), userInfo: [NSLocalizedDescriptionKey: message])
+    }
+    if (error as? Status) != .userCanceled {
+      logger.error("OSStatus error:[\(status)] \(error.localizedDescription, privacy: .public)")
     }
 
     return error
@@ -1766,6 +1775,8 @@ public enum Status: OSStatus, Error {
 
 extension Status: RawRepresentable, CustomStringConvertible {
 
+  /// Maps `status` to a known case, or `.unexpectedError` if there is none.
+  /// Errors thrown by `Keychain` keep unknown codes as `NSOSStatusErrorDomain` errors instead.
   public init(status: OSStatus) {
     if let mappedStatus = Status(rawValue: status) {
       self = mappedStatus

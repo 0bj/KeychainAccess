@@ -99,6 +99,8 @@ catch let error {
 }
 ```
 
+Errors are `Status` values. An `OSStatus` that `Status` doesn't cover is thrown as an `NSError` in `NSOSStatusErrorDomain` with the original code.
+
 ### :key: Obtaining an item
 
 #### subscripting
@@ -491,6 +493,10 @@ Swift 6, Xcode 26 or later.
 > Since v5.0.0 Shared Web Credentials API (`getSharedPassword`, `setSharedPassword`, `removeSharedPassword`, `requestSharedWebCredential`, `generatePassword`) has been removed. Use `ASAuthorizationController` with `ASAuthorizationPasswordRequest` (AuthenticationServices) instead.
 >
 > `Keychain.server` and `Keychain.protocolType` are optional since v5.0.0: they are `nil` for a generic password keychain instead of crashing on access.
+>
+> `contains(_:)` throws `Status.interactionNotAllowed` instead of returning `false` when the keychain can't be queried (e.g. the device is locked).
+>
+> `Attributes.ref` is `AnyObject?` (it was always `nil` as `Data?`). `authenticationPolicy` is available on watchOS.
 
 ## Installation
 

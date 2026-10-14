@@ -754,11 +754,7 @@ class KeychainAccessTests: XCTestCase {
                 XCTAssertNil(attributes?.ref)
                 XCTAssertNotNil(attributes?.persistentRef)
                 XCTAssertEqual(attributes?.accessible, Accessibility.afterFirstUnlock.rawValue)
-                if ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 11, minorVersion: 3, patchVersion: 0)) {
-                    XCTAssertNotNil(attributes?.accessControl)
-                } else {
-                    XCTAssertNil(attributes?.accessControl)
-                }
+                XCTAssertNotNil(attributes?.accessControl)
                 let accessGroup: String
                 accessGroup = testHostAccessGroup
                 XCTAssertEqual(attributes?.accessGroup, accessGroup)
