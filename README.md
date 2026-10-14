@@ -2,7 +2,7 @@
 
 [![SPM supported](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager)
 
-KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and macOS. Makes using Keychain APIs extremely easy and much more palatable to use in Swift.
+KeychainAccess is a simple Swift wrapper for Keychain that works on iOS, macOS, tvOS, watchOS and Mac Catalyst. Makes using Keychain APIs extremely easy and much more palatable to use in Swift.
 
 <img src=".github/images/touch-id.png" width="320px" />
 

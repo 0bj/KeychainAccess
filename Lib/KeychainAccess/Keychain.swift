@@ -70,7 +70,7 @@ public enum Accessibility: Sendable {
   /**
    Item data can only be accessed
    while the device is unlocked. This is recommended for items that only
-   need be accesible while the application is in the foreground. Items
+   need be accessible while the application is in the foreground. Items
    with this attribute will migrate to a new device when using encrypted
    backups.
    */
@@ -79,7 +79,7 @@ public enum Accessibility: Sendable {
   /**
    Item data can only be
    accessed once the device has been unlocked after a restart. This is
-   recommended for items that need to be accesible by background
+   recommended for items that need to be accessible by background
    applications. Items with this attribute will migrate to a new device
    when using encrypted backups.
    */
@@ -101,7 +101,7 @@ public enum Accessibility: Sendable {
   /**
    Item data can only
    be accessed while the device is unlocked. This is recommended for items
-   that only need be accesible while the application is in the foreground.
+   that only need be accessible while the application is in the foreground.
    Items with this attribute will never migrate to a new device, so after
    a backup is restored to a new device, these items will be missing.
    */
@@ -184,7 +184,7 @@ public struct AuthenticationPolicy: Sendable, OptionSet {
 
 // Holds an immutable snapshot of Security framework attribute values (property-list types).
 public struct Attributes: @unchecked Sendable {
-  private let cf = CFStringWrap()
+  private var cf: CFStringWrap { .shared }
 
   public var `class`: String? {
     return attributes[cf.Class] as? String
@@ -284,7 +284,7 @@ public struct Attributes: @unchecked Sendable {
 
 // Immutable: every modifier returns a new instance, and SecItem APIs are thread-safe.
 public final class Keychain: @unchecked Sendable {
-  private let cf = CFStringWrap()
+  private var cf: CFStringWrap { .shared }
 
   public var itemClass: ItemClass {
     return options.itemClass
@@ -650,7 +650,7 @@ public final class Keychain: @unchecked Sendable {
   // MARK:
 
   public class func allKeys(_ itemClass: ItemClass) -> [(String, String)] {
-    let cf = CFStringWrap()
+    let cf = CFStringWrap.shared
     var query = [String: Any]()
     query[cf.Class] = itemClass.rawValue
     query[cf.AttributeSynchronizable] = cf.SynchronizableAny
@@ -689,9 +689,10 @@ public final class Keychain: @unchecked Sendable {
   }
 
   public class func allItems(_ itemClass: ItemClass) -> [[String: Any]] {
-    let cf = CFStringWrap()
+    let cf = CFStringWrap.shared
     var query = [String: Any]()
     query[cf.Class] = itemClass.rawValue
+    query[cf.AttributeSynchronizable] = cf.SynchronizableAny
     query[cf.MatchLimit] = cf.MatchLimitAll
     query[cf.ReturnAttributes] = kCFBooleanTrue
 #if os(iOS) || os(watchOS) || os(tvOS)
@@ -747,7 +748,7 @@ public final class Keychain: @unchecked Sendable {
   }
 
   fileprivate class func prettify(itemClass: ItemClass, items: [[String: Any]]) -> [[String: Any]] {
-    let cf = CFStringWrap()
+    let cf = CFStringWrap.shared
     let items = items.map { attributes -> [String: Any] in
       var item = [String: Any]()
 
@@ -822,7 +823,7 @@ public final class Keychain: @unchecked Sendable {
 }
 
 struct Options {
-  let cf = CFStringWrap()
+  var cf: CFStringWrap { .shared }
 
   var itemClass: ItemClass = .genericPassword
 
@@ -849,10 +850,12 @@ struct Options {
 }
 
 struct CFStringWrap: @unchecked Sendable {
+  static let shared = CFStringWrap()
+
   /** Class Key Constant */
   let Class = String(kSecClass)
 
-  /** ute Key Constants */
+  /** Attribute Key Constants */
   let AttributeAccessible = String(kSecAttrAccessible)
 
   let AttributeAccessControl = String(kSecAttrAccessControl)
@@ -974,8 +977,8 @@ extension Options {
     if let policy = authenticationPolicy {
       var error: Unmanaged<CFError>?
       guard let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, SecAccessControlCreateFlags(rawValue: CFOptionFlags(policy.rawValue)), &error) else {
-        if let error = error?.takeUnretainedValue() {
-          return (attributes, error.error)
+        if let error = error?.takeRetainedValue() {
+          return (attributes, error as Error)
         }
 
         return (attributes, Status.unexpectedError)
@@ -1352,16 +1355,6 @@ extension Accessibility: RawRepresentable, CustomStringConvertible {
     case .afterFirstUnlockThisDeviceOnly:
       return "AfterFirstUnlockThisDeviceOnly"
     }
-  }
-}
-
-extension CFError {
-  var error: NSError {
-    let domain = CFErrorGetDomain(self) as String
-    let code = CFErrorGetCode(self)
-    let userInfo = CFErrorCopyUserInfo(self) as! [String: Any]
-
-    return NSError(domain: domain, code: code, userInfo: userInfo)
   }
 }
 
