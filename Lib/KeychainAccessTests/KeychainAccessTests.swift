@@ -1791,4 +1791,41 @@ class KeychainAccessTests: XCTestCase {
         XCTAssertNil(try! keychain.get("password"), "not stored password")
         XCTAssertNil(try! keychainSynchronizable.get("password"), "not stored password")
     }
+
+    func testUpdateIgnoringAttributeSynchronizable() {
+        let keychain = Keychain(service: "Twitter").synchronizable(false)
+        let keychainSynchronizable = Keychain(service: "Twitter").synchronizable(true)
+
+        try! keychain.set("local", key: "token", ignoringAttributeSynchronizable: false)
+        try! keychainSynchronizable.set("synchronizable", key: "token", ignoringAttributeSynchronizable: false)
+
+        // Updating one copy must not touch the other one with the same key
+        try! keychainSynchronizable.set("synchronizable_updated", key: "token", ignoringAttributeSynchronizable: false)
+        XCTAssertEqual(try! keychain.get("token", ignoringAttributeSynchronizable: false), "local")
+        XCTAssertEqual(try! keychainSynchronizable.get("token", ignoringAttributeSynchronizable: false), "synchronizable_updated")
+
+        try! keychain.set("local_updated", key: "token", ignoringAttributeSynchronizable: false)
+        XCTAssertEqual(try! keychain.get("token", ignoringAttributeSynchronizable: false), "local_updated")
+        XCTAssertEqual(try! keychainSynchronizable.get("token", ignoringAttributeSynchronizable: false), "synchronizable_updated")
+    }
+
+    func testContainsIgnoringAttributeSynchronizable() {
+        let keychain = Keychain(service: "Twitter").synchronizable(false)
+        let keychainSynchronizable = Keychain(service: "Twitter").synchronizable(true)
+
+        try! keychainSynchronizable.set("synchronizable", key: "token", ignoringAttributeSynchronizable: false)
+
+        XCTAssertTrue(try! keychain.contains("token"))
+        XCTAssertFalse(try! keychain.contains("token", ignoringAttributeSynchronizable: false))
+        XCTAssertTrue(try! keychainSynchronizable.contains("token", ignoringAttributeSynchronizable: false))
+    }
+
+    func testAllItemsIncludesSynchronizableItems() {
+        try! Keychain(service: "Twitter").synchronizable(true).set("synchronizable", key: "token")
+
+        let items = Keychain.allItems(.genericPassword).filter { $0["service"] as? String == "Twitter" }
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items.first?["key"] as? String, "token")
+        XCTAssertEqual(items.first?["synchronizable"] as? String, "true")
+    }
 }
