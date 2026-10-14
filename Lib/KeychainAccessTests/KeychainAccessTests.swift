@@ -47,7 +47,7 @@ class KeychainAccessTests: XCTestCase {
 
     // MARK:
 
-    func testGenericPassword() {
+    func testGenericPassword() throws {
         do {
             // Add Keychain items
             let keychain = Keychain(service: "Twitter")
@@ -55,10 +55,10 @@ class KeychainAccessTests: XCTestCase {
             do { try keychain.set("bob", key: "username") } catch {}
             do { try keychain.set("password_1234", key: "password") } catch {}
 
-            let username = try! keychain.get("username")
+            let username = try keychain.get("username")
             XCTAssertEqual(username, "bob")
 
-            let password = try! keychain.get("password")
+            let password = try keychain.get("password")
             XCTAssertEqual(password, "password_1234")
         }
 
@@ -69,10 +69,10 @@ class KeychainAccessTests: XCTestCase {
             do { try keychain.set("alice", key: "username") } catch {}
             do { try keychain.set("1234_password", key: "password") } catch {}
 
-            let username = try! keychain.get("username")
+            let username = try keychain.get("username")
             XCTAssertEqual(username, "alice")
 
-            let password = try! keychain.get("password")
+            let password = try keychain.get("password")
             XCTAssertEqual(password, "1234_password")
         }
 
@@ -83,12 +83,12 @@ class KeychainAccessTests: XCTestCase {
             do { try keychain.remove("username") } catch {}
             do { try keychain.remove("password") } catch {}
 
-            XCTAssertNil(try! keychain.get("username"))
-            XCTAssertNil(try! keychain.get("password"))
+            XCTAssertNil(try keychain.get("username"))
+            XCTAssertNil(try keychain.get("password"))
         }
     }
 
-    func testGenericPasswordSubscripting() {
+    func testGenericPasswordSubscripting() throws {
         do {
             // Add Keychain items
             let keychain = Keychain(service: "Twitter", accessGroup: sharedAccessGroup)
@@ -129,7 +129,7 @@ class KeychainAccessTests: XCTestCase {
         }
     }
 
-    func testGenericPasswordWithAccessGroup1() {
+    func testGenericPasswordWithAccessGroup1() throws {
         do {
             // Add Keychain items
             // This attribute (kSecAttrAccessGroup) applies to macOS keychain items only if you also set a value of true for the
@@ -143,11 +143,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("bob_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("password_1234_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "bob")
-            XCTAssertEqual(try! keychain.get("password"), "password_1234")
+            XCTAssertEqual(try keychain.get("username"), "bob")
+            XCTAssertEqual(try keychain.get("password"), "password_1234")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "bob_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "password_1234_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "bob_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "password_1234_access_group")
         }
 
         do {
@@ -160,11 +160,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("alice_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("1234_password_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "alice")
-            XCTAssertEqual(try! keychain.get("password"), "1234_password")
+            XCTAssertEqual(try keychain.get("username"), "alice")
+            XCTAssertEqual(try keychain.get("password"), "1234_password")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "alice_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "1234_password_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "alice_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "1234_password_access_group")
         }
 
         do {
@@ -172,28 +172,28 @@ class KeychainAccessTests: XCTestCase {
             let keychain = Keychain(service: "Twitter").synchronizable(true)
             let keychainWithAccessGroup = Keychain(service: "Twitter", accessGroup: sharedAccessGroup).synchronizable(true)
 
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("password"))
 
             do { try keychainWithAccessGroup.remove("username") } catch {}
             do { try keychainWithAccessGroup.remove("password") } catch {}
 
 
-            XCTAssertNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNil(try keychainWithAccessGroup.get("password"))
 
-            XCTAssertNotNil(try! keychain.get("username"))
-            XCTAssertNotNil(try! keychain.get("password"))
+            XCTAssertNotNil(try keychain.get("username"))
+            XCTAssertNotNil(try keychain.get("password"))
 
             do { try keychain.remove("username") } catch {}
             do { try keychain.remove("password") } catch {}
 
-            XCTAssertNil(try! keychain.get("username"))
-            XCTAssertNil(try! keychain.get("password"))
+            XCTAssertNil(try keychain.get("username"))
+            XCTAssertNil(try keychain.get("password"))
         }
     }
 
-    func testGenericPasswordWithAccessGroup2() {
+    func testGenericPasswordWithAccessGroup2() throws {
         do {
             // Add Keychain items
             let keychain = Keychain(service: "Twitter").synchronizable(true)
@@ -204,11 +204,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("bob_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("password_1234_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "bob")
-            XCTAssertEqual(try! keychain.get("password"), "password_1234")
+            XCTAssertEqual(try keychain.get("username"), "bob")
+            XCTAssertEqual(try keychain.get("password"), "password_1234")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "bob_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "password_1234_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "bob_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "password_1234_access_group")
         }
 
         do {
@@ -221,11 +221,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("alice_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("1234_password_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "alice")
-            XCTAssertEqual(try! keychain.get("password"), "1234_password")
+            XCTAssertEqual(try keychain.get("username"), "alice")
+            XCTAssertEqual(try keychain.get("password"), "1234_password")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "alice_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "1234_password_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "alice_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "1234_password_access_group")
         }
 
         do {
@@ -233,24 +233,24 @@ class KeychainAccessTests: XCTestCase {
             let keychain = Keychain(service: "Twitter").synchronizable(true)
             let keychainWithAccessGroup = Keychain(service: "Twitter", accessGroup: sharedAccessGroup).synchronizable(true)
 
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("password"))
 
             do { try keychain.remove("username") } catch {}
             do { try keychain.remove("password") } catch {}
 
             // If the access group is empty, the query will match all access group. So delete all values in other access groups.
-            XCTAssertNil(try! keychain.get("username"))
-            XCTAssertNil(try! keychain.get("password"))
+            XCTAssertNil(try keychain.get("username"))
+            XCTAssertNil(try keychain.get("password"))
 
-            XCTAssertNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNil(try keychainWithAccessGroup.get("password"))
         }
     }
 
     // MARK:
 
-    func testInternetPassword() {
+    func testInternetPassword() throws {
         do {
             // Add Keychain items
             let keychain = Keychain(server: URL(string: "https://example.org")!, protocolType: .https)
@@ -258,10 +258,10 @@ class KeychainAccessTests: XCTestCase {
             do { try keychain.set("bob", key: "username") } catch {}
             do { try keychain.set("password_1234", key: "password") } catch {}
 
-            let username = try! keychain.get("username")
+            let username = try keychain.get("username")
             XCTAssertEqual(username, "bob")
 
-            let password = try! keychain.get("password")
+            let password = try keychain.get("password")
             XCTAssertEqual(password, "password_1234")
         }
 
@@ -272,10 +272,10 @@ class KeychainAccessTests: XCTestCase {
             do { try keychain.set("alice", key: "username") } catch {}
             do { try keychain.set("1234_password", key: "password") } catch {}
 
-            let username = try! keychain.get("username")
+            let username = try keychain.get("username")
             XCTAssertEqual(username, "alice")
 
-            let password = try! keychain.get("password")
+            let password = try keychain.get("password")
             XCTAssertEqual(password, "1234_password")
         }
 
@@ -286,12 +286,12 @@ class KeychainAccessTests: XCTestCase {
             do { try keychain.remove("username") } catch {}
             do { try keychain.remove("password") } catch {}
 
-            XCTAssertNil(try! keychain.get("username"))
-            XCTAssertNil(try! keychain.get("password"))
+            XCTAssertNil(try keychain.get("username"))
+            XCTAssertNil(try keychain.get("password"))
         }
     }
 
-    func testInternetPasswordSubscripting() {
+    func testInternetPasswordSubscripting() throws {
         do {
             // Add Keychain items
             let keychain = Keychain(server: URL(string: "https://example.org")!, protocolType: .https)
@@ -332,7 +332,7 @@ class KeychainAccessTests: XCTestCase {
         }
     }
 
-    func testInternetPasswordWithAccessGroup1() {
+    func testInternetPasswordWithAccessGroup1() throws {
         do {
             // Add Keychain items
             // This attribute (kSecAttrAccessGroup) applies to macOS keychain items only if you also set a value of true for the
@@ -346,11 +346,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("bob_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("password_1234_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "bob")
-            XCTAssertEqual(try! keychain.get("password"), "password_1234")
+            XCTAssertEqual(try keychain.get("username"), "bob")
+            XCTAssertEqual(try keychain.get("password"), "password_1234")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "bob_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "password_1234_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "bob_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "password_1234_access_group")
         }
 
         do {
@@ -363,11 +363,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("alice_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("1234_password_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "alice")
-            XCTAssertEqual(try! keychain.get("password"), "1234_password")
+            XCTAssertEqual(try keychain.get("username"), "alice")
+            XCTAssertEqual(try keychain.get("password"), "1234_password")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "alice_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "1234_password_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "alice_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "1234_password_access_group")
         }
 
         do {
@@ -375,28 +375,28 @@ class KeychainAccessTests: XCTestCase {
             let keychain = Keychain(server: "https://example.org", protocolType: .https).synchronizable(true)
             let keychainWithAccessGroup = Keychain(server: "https://example.org", protocolType: .https, accessGroup: sharedAccessGroup).synchronizable(true)
 
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("password"))
 
             do { try keychainWithAccessGroup.remove("username") } catch {}
             do { try keychainWithAccessGroup.remove("password") } catch {}
 
 
-            XCTAssertNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNil(try keychainWithAccessGroup.get("password"))
 
-            XCTAssertNotNil(try! keychain.get("username"))
-            XCTAssertNotNil(try! keychain.get("password"))
+            XCTAssertNotNil(try keychain.get("username"))
+            XCTAssertNotNil(try keychain.get("password"))
 
             do { try keychain.remove("username") } catch {}
             do { try keychain.remove("password") } catch {}
 
-            XCTAssertNil(try! keychain.get("username"))
-            XCTAssertNil(try! keychain.get("password"))
+            XCTAssertNil(try keychain.get("username"))
+            XCTAssertNil(try keychain.get("password"))
         }
     }
 
-    func testInternetPasswordWithAccessGroup2() {
+    func testInternetPasswordWithAccessGroup2() throws {
         do {
             // Add Keychain items
             let keychain = Keychain(server: "https://example.org", protocolType: .https).synchronizable(true)
@@ -407,11 +407,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("bob_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("password_1234_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "bob")
-            XCTAssertEqual(try! keychain.get("password"), "password_1234")
+            XCTAssertEqual(try keychain.get("username"), "bob")
+            XCTAssertEqual(try keychain.get("password"), "password_1234")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "bob_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "password_1234_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "bob_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "password_1234_access_group")
         }
 
         do {
@@ -424,11 +424,11 @@ class KeychainAccessTests: XCTestCase {
             do { try keychainWithAccessGroup.set("alice_access_group", key: "username") } catch {}
             do { try keychainWithAccessGroup.set("1234_password_access_group", key: "password") } catch {}
 
-            XCTAssertEqual(try! keychain.get("username"), "alice")
-            XCTAssertEqual(try! keychain.get("password"), "1234_password")
+            XCTAssertEqual(try keychain.get("username"), "alice")
+            XCTAssertEqual(try keychain.get("password"), "1234_password")
 
-            XCTAssertEqual(try! keychainWithAccessGroup.get("username"), "alice_access_group")
-            XCTAssertEqual(try! keychainWithAccessGroup.get("password"), "1234_password_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("username"), "alice_access_group")
+            XCTAssertEqual(try keychainWithAccessGroup.get("password"), "1234_password_access_group")
         }
 
         do {
@@ -436,25 +436,25 @@ class KeychainAccessTests: XCTestCase {
             let keychain = Keychain(server: "https://example.org", protocolType: .https).synchronizable(true)
             let keychainWithAccessGroup = Keychain(server: "https://example.org", protocolType: .https, accessGroup: sharedAccessGroup).synchronizable(true)
 
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNotNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNotNil(try keychainWithAccessGroup.get("password"))
 
             do { try keychain.remove("username") } catch {}
             do { try keychain.remove("password") } catch {}
 
             // If the access group is empty, the query will match all access group. So delete all values in other access groups.
-            XCTAssertNil(try! keychain.get("username"))
-            XCTAssertNil(try! keychain.get("password"))
+            XCTAssertNil(try keychain.get("username"))
+            XCTAssertNil(try keychain.get("password"))
 
-            XCTAssertNil(try! keychainWithAccessGroup.get("username"))
-            XCTAssertNil(try! keychainWithAccessGroup.get("password"))
+            XCTAssertNil(try keychainWithAccessGroup.get("username"))
+            XCTAssertNil(try keychainWithAccessGroup.get("password"))
         }
     }
 
 
     // MARK:
 
-    func testDefaultInitializer() {
+    func testDefaultInitializer() throws {
         let keychain = Keychain()
         XCTAssertEqual(keychain.service, Bundle.main.bundleIdentifier)
         let service: String
@@ -463,7 +463,7 @@ class KeychainAccessTests: XCTestCase {
         XCTAssertNil(keychain.accessGroup)
     }
 
-    func testInitializerWithService() {
+    func testInitializerWithService() throws {
         let keychain = Keychain(service: "com.example.github-token")
         XCTAssertEqual(keychain.service, "com.example.github-token")
         XCTAssertNil(keychain.accessGroup)
@@ -471,7 +471,7 @@ class KeychainAccessTests: XCTestCase {
         XCTAssertNil(keychain.protocolType)
     }
 
-    func testInitializerWithAccessGroup() {
+    func testInitializerWithAccessGroup() throws {
         let keychain = Keychain(accessGroup: sharedAccessGroup)
         let service: String
         service = "io.github.0bj.KeychainAccess.TestHost"
@@ -479,13 +479,13 @@ class KeychainAccessTests: XCTestCase {
         XCTAssertEqual(keychain.accessGroup, sharedAccessGroup)
     }
 
-    func testInitializerWithServiceAndAccessGroup() {
+    func testInitializerWithServiceAndAccessGroup() throws {
         let keychain = Keychain(service: "com.example.github-token", accessGroup: sharedAccessGroup)
         XCTAssertEqual(keychain.service, "com.example.github-token")
         XCTAssertEqual(keychain.accessGroup, sharedAccessGroup)
     }
 
-    func testInitializerWithServer() {
+    func testInitializerWithServer() throws {
         let server = "https://example.org"
         let url = URL(string: server)!
 
@@ -503,7 +503,7 @@ class KeychainAccessTests: XCTestCase {
         }
     }
 
-    func testInitializerWithServerAndAuthenticationType() {
+    func testInitializerWithServerAndAuthenticationType() throws {
         let server = "https://example.org"
         let url = URL(string: server)!
 
@@ -523,39 +523,39 @@ class KeychainAccessTests: XCTestCase {
 
     // MARK:
 
-    func testContains() {
+    func testContains() throws {
         let keychain = Keychain(service: "Twitter")
 
-        XCTAssertFalse(try! keychain.contains("username"), "not stored username")
-        XCTAssertFalse(try! keychain.contains("password"), "not stored password")
+        XCTAssertFalse(try keychain.contains("username"), "not stored username")
+        XCTAssertFalse(try keychain.contains("password"), "not stored password")
 
         do { try keychain.set("carol", key: "username") } catch {}
-        XCTAssertTrue(try! keychain.contains("username"), "stored username")
-        XCTAssertFalse(try! keychain.contains("password"), "not stored password")
+        XCTAssertTrue(try keychain.contains("username"), "stored username")
+        XCTAssertFalse(try keychain.contains("password"), "not stored password")
 
         do { try keychain.set("password1234", key: "password") } catch {}
-        XCTAssertTrue(try! keychain.contains("username"), "stored username")
-        XCTAssertTrue(try! keychain.contains("password"), "stored password")
+        XCTAssertTrue(try keychain.contains("username"), "stored username")
+        XCTAssertTrue(try keychain.contains("password"), "stored password")
     }
 
     // MARK:
 
-    func testSetString() {
+    func testSetString() throws {
         let keychain = Keychain(service: "Twitter")
 
-        XCTAssertNil(try! keychain.get("username"), "not stored username")
-        XCTAssertNil(try! keychain.get("password"), "not stored password")
+        XCTAssertNil(try keychain.get("username"), "not stored username")
+        XCTAssertNil(try keychain.get("password"), "not stored password")
 
         do { try keychain.set("carol", key: "username") } catch {}
-        XCTAssertEqual(try! keychain.get("username"), "carol", "stored username")
-        XCTAssertNil(try! keychain.get("password"), "not stored password")
+        XCTAssertEqual(try keychain.get("username"), "carol", "stored username")
+        XCTAssertNil(try keychain.get("password"), "not stored password")
 
         do { try keychain.set("password1234", key: "password") } catch {}
-        XCTAssertEqual(try! keychain.get("username"), "carol", "stored username")
-        XCTAssertEqual(try! keychain.get("password"), "password1234", "stored password")
+        XCTAssertEqual(try keychain.get("username"), "carol", "stored username")
+        XCTAssertEqual(try keychain.get("password"), "password1234", "stored password")
     }
 
-    func testSetStringWithLabel() {
+    func testSetStringWithLabel() throws {
         let keychain = Keychain(service: "Twitter")
             .label("Twitter Account")
 
@@ -583,7 +583,7 @@ class KeychainAccessTests: XCTestCase {
         }
     }
 
-    func testSetStringWithComment() {
+    func testSetStringWithComment() throws {
         let keychain = Keychain(service: "Twitter")
             .comment("Alice Smith")
 
@@ -611,7 +611,7 @@ class KeychainAccessTests: XCTestCase {
         }
     }
 
-    func testSetStringWithLabelAndComment() {
+    func testSetStringWithLabelAndComment() throws {
         let keychain = Keychain(service: "Twitter")
             .label("Twitter Account")
             .comment("Alice Smith")
@@ -650,19 +650,19 @@ class KeychainAccessTests: XCTestCase {
         }
     }
 
-    func testSetData() {
+    func testSetData() throws {
         let JSONObject = ["username": "carol", "password": "password1234"]
-        let JSONData = try! JSONSerialization.data(withJSONObject: JSONObject, options: [])
+        let JSONData = try JSONSerialization.data(withJSONObject: JSONObject, options: [])
 
         let keychain = Keychain(service: "Twitter")
 
-        XCTAssertNil(try! keychain.getData("JSONData"), "not stored JSON data")
+        XCTAssertNil(try keychain.getData("JSONData"), "not stored JSON data")
 
         do { try keychain.set(JSONData, key: "JSONData") } catch {}
-        XCTAssertEqual(try! keychain.getData("JSONData"), JSONData, "stored JSON data")
+        XCTAssertEqual(try keychain.getData("JSONData"), JSONData, "stored JSON data")
     }
 
-    func testStringConversionError() {
+    func testStringConversionError() throws {
         let keychain = Keychain(service: "Twitter")
 
         let length = 256
@@ -693,7 +693,7 @@ class KeychainAccessTests: XCTestCase {
         }
     }
 
-    func testGetPersistentRef() {
+    func testGetPersistentRef() throws {
         let keychain = Keychain(service: "Twitter")
 
         XCTAssertNil(keychain["carol"], "not stored password")
@@ -717,7 +717,7 @@ class KeychainAccessTests: XCTestCase {
     }
 
     #if os(iOS) || os(tvOS)
-    func testSetAttributes() {
+    func testSetAttributes() throws {
         do {
             var attributes = [String: Any]()
             attributes[String(kSecAttrDescription)] = "Description Test"
@@ -923,45 +923,45 @@ class KeychainAccessTests: XCTestCase {
     }
     #endif
 
-    func testRemoveString() {
+    func testRemoveString() throws {
         let keychain = Keychain(service: "Twitter")
 
-        XCTAssertNil(try! keychain.get("username"), "not stored username")
-        XCTAssertNil(try! keychain.get("password"), "not stored password")
+        XCTAssertNil(try keychain.get("username"), "not stored username")
+        XCTAssertNil(try keychain.get("password"), "not stored password")
 
         do { try keychain.set("carol", key: "username") } catch {}
-        XCTAssertEqual(try! keychain.get("username"), "carol", "stored username")
+        XCTAssertEqual(try keychain.get("username"), "carol", "stored username")
 
         do { try keychain.set("password1234", key: "password") } catch {}
-        XCTAssertEqual(try! keychain.get("password"), "password1234", "stored password")
+        XCTAssertEqual(try keychain.get("password"), "password1234", "stored password")
 
         do { try keychain.remove("username") } catch {}
-        XCTAssertNil(try! keychain.get("username"), "removed username")
-        XCTAssertEqual(try! keychain.get("password"), "password1234", "left password")
+        XCTAssertNil(try keychain.get("username"), "removed username")
+        XCTAssertEqual(try keychain.get("password"), "password1234", "left password")
 
         do { try keychain.remove("password") } catch {}
-        XCTAssertNil(try! keychain.get("username"), "removed username")
-        XCTAssertNil(try! keychain.get("password"), "removed password")
+        XCTAssertNil(try keychain.get("username"), "removed username")
+        XCTAssertNil(try keychain.get("password"), "removed password")
     }
 
-    func testRemoveData() {
+    func testRemoveData() throws {
         let JSONObject = ["username": "carol", "password": "password1234"]
-        let JSONData = try! JSONSerialization.data(withJSONObject: JSONObject, options: [])
+        let JSONData = try JSONSerialization.data(withJSONObject: JSONObject, options: [])
 
         let keychain = Keychain(service: "Twitter")
 
-        XCTAssertNil(try! keychain.getData("JSONData"), "not stored JSON data")
+        XCTAssertNil(try keychain.getData("JSONData"), "not stored JSON data")
 
         do { try keychain.set(JSONData, key: "JSONData") } catch {}
-        XCTAssertEqual(try! keychain.getData("JSONData"), JSONData, "stored JSON data")
+        XCTAssertEqual(try keychain.getData("JSONData"), JSONData, "stored JSON data")
 
         do { try keychain.remove("JSONData") } catch {}
-        XCTAssertNil(try! keychain.getData("JSONData"), "removed JSON data")
+        XCTAssertNil(try keychain.getData("JSONData"), "removed JSON data")
     }
 
     // MARK:
 
-    func testSubscripting() {
+    func testSubscripting() throws {
         let keychain = Keychain(service: "Twitter")
 
         XCTAssertNil(keychain["username"], "not stored username")
@@ -990,7 +990,7 @@ class KeychainAccessTests: XCTestCase {
         XCTAssertNil(keychain[string: "password"], "removed password")
 
         let JSONObject = ["username": "carol", "password": "password1234"]
-        let JSONData = try! JSONSerialization.data(withJSONObject: JSONObject, options: [])
+        let JSONData = try JSONSerialization.data(withJSONObject: JSONObject, options: [])
 
         XCTAssertNil(keychain[data:"JSONData"], "not stored JSON data")
 
@@ -1003,7 +1003,7 @@ class KeychainAccessTests: XCTestCase {
 
     // MARK:
 
-    func testErrorHandling() {
+    func testErrorHandling() throws {
         do {
             let keychain = Keychain(service: "Twitter", accessGroup: sharedAccessGroup)
             try keychain.removeAll()
@@ -1104,13 +1104,13 @@ class KeychainAccessTests: XCTestCase {
 
             do {
                 try keychain.remove("username")
-                XCTAssertNil(try! keychain.get("username"))
+                XCTAssertNil(try keychain.get("username"))
             } catch {
                 XCTFail("error occurred")
             }
             do {
                 try keychain.remove("password")
-                XCTAssertNil(try! keychain.get("username"))
+                XCTAssertNil(try keychain.get("username"))
             } catch {
                 XCTFail("error occurred")
             }
@@ -1119,7 +1119,7 @@ class KeychainAccessTests: XCTestCase {
 
     // MARK:
 
-    func testSetStringWithCustomService() {
+    func testSetStringWithCustomService() throws {
         let username_1 = "carol"
         let password_1 = "password1234"
         let username_2 = "bob"
@@ -1136,115 +1136,115 @@ class KeychainAccessTests: XCTestCase {
         do { try Keychain(service: service_2).removeAll() } catch {}
         do { try Keychain(service: service_3).removeAll() } catch {}
 
-        XCTAssertNil(try! Keychain().get("username"), "not stored username")
-        XCTAssertNil(try! Keychain().get("password"), "not stored password")
-        XCTAssertNil(try! Keychain(service: service_1).get("username"), "not stored username")
-        XCTAssertNil(try! Keychain(service: service_1).get("password"), "not stored password")
-        XCTAssertNil(try! Keychain(service: service_2).get("username"), "not stored username")
-        XCTAssertNil(try! Keychain(service: service_2).get("password"), "not stored password")
-        XCTAssertNil(try! Keychain(service: service_3).get("username"), "not stored username")
-        XCTAssertNil(try! Keychain(service: service_3).get("password"), "not stored password")
+        XCTAssertNil(try Keychain().get("username"), "not stored username")
+        XCTAssertNil(try Keychain().get("password"), "not stored password")
+        XCTAssertNil(try Keychain(service: service_1).get("username"), "not stored username")
+        XCTAssertNil(try Keychain(service: service_1).get("password"), "not stored password")
+        XCTAssertNil(try Keychain(service: service_2).get("username"), "not stored username")
+        XCTAssertNil(try Keychain(service: service_2).get("password"), "not stored password")
+        XCTAssertNil(try Keychain(service: service_3).get("username"), "not stored username")
+        XCTAssertNil(try Keychain(service: service_3).get("password"), "not stored password")
 
         do { try Keychain().set(username_1, key: "username") } catch {}
-        XCTAssertEqual(try! Keychain().get("username"), username_1, "stored username")
-        XCTAssertNil(try! Keychain(service: service_1).get("password"), "not stored password")
-        XCTAssertNil(try! Keychain(service: service_2).get("username"), "not stored username")
-        XCTAssertNil(try! Keychain(service: service_3).get("username"), "not stored username")
+        XCTAssertEqual(try Keychain().get("username"), username_1, "stored username")
+        XCTAssertNil(try Keychain(service: service_1).get("password"), "not stored password")
+        XCTAssertNil(try Keychain(service: service_2).get("username"), "not stored username")
+        XCTAssertNil(try Keychain(service: service_3).get("username"), "not stored username")
 
         do { try Keychain(service: service_1).set(username_1, key: "username") } catch {}
-        XCTAssertEqual(try! Keychain().get("username"), username_1, "stored username")
-        XCTAssertEqual(try! Keychain(service: service_1).get("username"), username_1, "stored username")
-        XCTAssertNil(try! Keychain(service: service_2).get("username"), "not stored username")
-        XCTAssertNil(try! Keychain(service: service_3).get("username"), "not stored username")
+        XCTAssertEqual(try Keychain().get("username"), username_1, "stored username")
+        XCTAssertEqual(try Keychain(service: service_1).get("username"), username_1, "stored username")
+        XCTAssertNil(try Keychain(service: service_2).get("username"), "not stored username")
+        XCTAssertNil(try Keychain(service: service_3).get("username"), "not stored username")
 
         do { try Keychain(service: service_2).set(username_2, key: "username") } catch {}
-        XCTAssertEqual(try! Keychain().get("username"), username_1, "stored username")
-        XCTAssertEqual(try! Keychain(service: service_1).get("username"), username_1, "stored username")
-        XCTAssertEqual(try! Keychain(service: service_2).get("username"), username_2, "stored username")
-        XCTAssertNil(try! Keychain(service: service_3).get("username"), "not stored username")
+        XCTAssertEqual(try Keychain().get("username"), username_1, "stored username")
+        XCTAssertEqual(try Keychain(service: service_1).get("username"), username_1, "stored username")
+        XCTAssertEqual(try Keychain(service: service_2).get("username"), username_2, "stored username")
+        XCTAssertNil(try Keychain(service: service_3).get("username"), "not stored username")
 
         do { try Keychain(service: service_3).set(username_3, key: "username") } catch {}
-        XCTAssertEqual(try! Keychain().get("username"), username_1, "stored username")
-        XCTAssertEqual(try! Keychain(service: service_1).get("username"), username_1, "stored username")
-        XCTAssertEqual(try! Keychain(service: service_2).get("username"), username_2, "stored username")
-        XCTAssertEqual(try! Keychain(service: service_3).get("username"), username_3, "stored username")
+        XCTAssertEqual(try Keychain().get("username"), username_1, "stored username")
+        XCTAssertEqual(try Keychain(service: service_1).get("username"), username_1, "stored username")
+        XCTAssertEqual(try Keychain(service: service_2).get("username"), username_2, "stored username")
+        XCTAssertEqual(try Keychain(service: service_3).get("username"), username_3, "stored username")
 
         do { try Keychain().set(password_1, key: "password") } catch {}
-        XCTAssertEqual(try! Keychain().get("password"), password_1, "stored password")
-        XCTAssertNil(try! Keychain(service: service_1).get("password"), "not stored password")
-        XCTAssertNil(try! Keychain(service: service_2).get("password"), "not stored password")
-        XCTAssertNil(try! Keychain(service: service_3).get("password"), "not stored password")
+        XCTAssertEqual(try Keychain().get("password"), password_1, "stored password")
+        XCTAssertNil(try Keychain(service: service_1).get("password"), "not stored password")
+        XCTAssertNil(try Keychain(service: service_2).get("password"), "not stored password")
+        XCTAssertNil(try Keychain(service: service_3).get("password"), "not stored password")
 
         do { try Keychain(service: service_1).set(password_1, key: "password") } catch {}
-        XCTAssertEqual(try! Keychain().get("password"), password_1, "stored password")
-        XCTAssertEqual(try! Keychain(service: service_1).get("password"), password_1, "stored password")
-        XCTAssertNil(try! Keychain(service: service_2).get("password"), "not stored password")
-        XCTAssertNil(try! Keychain(service: service_3).get("password"), "not stored password")
+        XCTAssertEqual(try Keychain().get("password"), password_1, "stored password")
+        XCTAssertEqual(try Keychain(service: service_1).get("password"), password_1, "stored password")
+        XCTAssertNil(try Keychain(service: service_2).get("password"), "not stored password")
+        XCTAssertNil(try Keychain(service: service_3).get("password"), "not stored password")
 
         do { try Keychain(service: service_2).set(password_2, key: "password") } catch {}
-        XCTAssertEqual(try! Keychain().get("password"), password_1, "stored password")
-        XCTAssertEqual(try! Keychain(service: service_1).get("password"), password_1, "stored password")
-        XCTAssertEqual(try! Keychain(service: service_2).get("password"), password_2, "stored password")
-        XCTAssertNil(try! Keychain(service: service_3).get("password"), "not stored password")
+        XCTAssertEqual(try Keychain().get("password"), password_1, "stored password")
+        XCTAssertEqual(try Keychain(service: service_1).get("password"), password_1, "stored password")
+        XCTAssertEqual(try Keychain(service: service_2).get("password"), password_2, "stored password")
+        XCTAssertNil(try Keychain(service: service_3).get("password"), "not stored password")
 
         do { try Keychain(service: service_3).set(password_3, key: "password") } catch {}
-        XCTAssertEqual(try! Keychain().get("password"), password_1, "stored password")
-        XCTAssertEqual(try! Keychain(service: service_1).get("password"), password_1, "stored password")
-        XCTAssertEqual(try! Keychain(service: service_2).get("password"), password_2, "stored password")
-        XCTAssertEqual(try! Keychain(service: service_3).get("password"), password_3, "stored password")
+        XCTAssertEqual(try Keychain().get("password"), password_1, "stored password")
+        XCTAssertEqual(try Keychain(service: service_1).get("password"), password_1, "stored password")
+        XCTAssertEqual(try Keychain(service: service_2).get("password"), password_2, "stored password")
+        XCTAssertEqual(try Keychain(service: service_3).get("password"), password_3, "stored password")
 
         do { try Keychain().remove("username") } catch {}
-        XCTAssertNil(try! Keychain().get("username"), "removed username")
-        XCTAssertEqual(try! Keychain(service: service_1).get("username"), username_1, "left username")
-        XCTAssertEqual(try! Keychain(service: service_2).get("username"), username_2, "left username")
-        XCTAssertEqual(try! Keychain(service: service_3).get("username"), username_3, "left username")
+        XCTAssertNil(try Keychain().get("username"), "removed username")
+        XCTAssertEqual(try Keychain(service: service_1).get("username"), username_1, "left username")
+        XCTAssertEqual(try Keychain(service: service_2).get("username"), username_2, "left username")
+        XCTAssertEqual(try Keychain(service: service_3).get("username"), username_3, "left username")
 
         do { try Keychain(service: service_1).remove("username") } catch {}
-        XCTAssertNil(try! Keychain().get("username"), "removed username")
-        XCTAssertNil(try! Keychain(service: service_1).get("username"), "removed username")
-        XCTAssertEqual(try! Keychain(service: service_2).get("username"), username_2, "left username")
-        XCTAssertEqual(try! Keychain(service: service_3).get("username"), username_3, "left username")
+        XCTAssertNil(try Keychain().get("username"), "removed username")
+        XCTAssertNil(try Keychain(service: service_1).get("username"), "removed username")
+        XCTAssertEqual(try Keychain(service: service_2).get("username"), username_2, "left username")
+        XCTAssertEqual(try Keychain(service: service_3).get("username"), username_3, "left username")
 
         do { try Keychain(service: service_2).remove("username") } catch {}
-        XCTAssertNil(try! Keychain().get("username"), "removed username")
-        XCTAssertNil(try! Keychain(service: service_1).get("username"), "removed username")
-        XCTAssertNil(try! Keychain(service: service_2).get("username"), "removed username")
-        XCTAssertEqual(try! Keychain(service: service_3).get("username"), username_3, "left username")
+        XCTAssertNil(try Keychain().get("username"), "removed username")
+        XCTAssertNil(try Keychain(service: service_1).get("username"), "removed username")
+        XCTAssertNil(try Keychain(service: service_2).get("username"), "removed username")
+        XCTAssertEqual(try Keychain(service: service_3).get("username"), username_3, "left username")
 
         do { try Keychain(service: service_3).remove("username") } catch {}
-        XCTAssertNil(try! Keychain().get("username"), "removed username")
-        XCTAssertNil(try! Keychain(service: service_1).get("username"), "removed username")
-        XCTAssertNil(try! Keychain(service: service_2).get("username"), "removed username")
-        XCTAssertNil(try! Keychain(service: service_3).get("username"), "removed username")
+        XCTAssertNil(try Keychain().get("username"), "removed username")
+        XCTAssertNil(try Keychain(service: service_1).get("username"), "removed username")
+        XCTAssertNil(try Keychain(service: service_2).get("username"), "removed username")
+        XCTAssertNil(try Keychain(service: service_3).get("username"), "removed username")
 
         do { try Keychain().remove("password") } catch {}
-        XCTAssertNil(try! Keychain().get("password"), "removed password")
-        XCTAssertEqual(try! Keychain(service: service_1).get("password"), password_1, "left password")
-        XCTAssertEqual(try! Keychain(service: service_2).get("password"), password_2, "left password")
-        XCTAssertEqual(try! Keychain(service: service_3).get("password"), password_3, "left password")
+        XCTAssertNil(try Keychain().get("password"), "removed password")
+        XCTAssertEqual(try Keychain(service: service_1).get("password"), password_1, "left password")
+        XCTAssertEqual(try Keychain(service: service_2).get("password"), password_2, "left password")
+        XCTAssertEqual(try Keychain(service: service_3).get("password"), password_3, "left password")
 
         do { try Keychain(service: service_1).remove("password") } catch {}
-        XCTAssertNil(try! Keychain().get("password"), "removed password")
-        XCTAssertNil(try! Keychain(service: service_1).get("password"), "removed password")
-        XCTAssertEqual(try! Keychain(service: service_2).get("password"), password_2, "left password")
-        XCTAssertEqual(try! Keychain(service: service_3).get("password"), password_3, "left password")
+        XCTAssertNil(try Keychain().get("password"), "removed password")
+        XCTAssertNil(try Keychain(service: service_1).get("password"), "removed password")
+        XCTAssertEqual(try Keychain(service: service_2).get("password"), password_2, "left password")
+        XCTAssertEqual(try Keychain(service: service_3).get("password"), password_3, "left password")
 
         do { try Keychain(service: service_2).remove("password") } catch {}
-        XCTAssertNil(try! Keychain().get("password"), "removed password")
-        XCTAssertNil(try! Keychain(service: service_1).get("password"), "removed password")
-        XCTAssertNil(try! Keychain(service: service_2).get("password"), "removed password")
-        XCTAssertEqual(try! Keychain(service: service_3).get("password"), password_3, "left password")
+        XCTAssertNil(try Keychain().get("password"), "removed password")
+        XCTAssertNil(try Keychain(service: service_1).get("password"), "removed password")
+        XCTAssertNil(try Keychain(service: service_2).get("password"), "removed password")
+        XCTAssertEqual(try Keychain(service: service_3).get("password"), password_3, "left password")
 
         do { try Keychain(service: service_3).remove("password") } catch {}
-        XCTAssertNil(try! Keychain().get("password"), "removed password")
-        XCTAssertNil(try! Keychain(service: service_2).get("password"), "removed password")
-        XCTAssertNil(try! Keychain(service: service_2).get("password"), "removed password")
-        XCTAssertNil(try! Keychain(service: service_2).get("password"), "removed password")
+        XCTAssertNil(try Keychain().get("password"), "removed password")
+        XCTAssertNil(try Keychain(service: service_2).get("password"), "removed password")
+        XCTAssertNil(try Keychain(service: service_2).get("password"), "removed password")
+        XCTAssertNil(try Keychain(service: service_2).get("password"), "removed password")
     }
 
     // MARK:
 
-    func testProperties() {
+    func testProperties() throws {
         let keychain = Keychain()
 
         XCTAssertEqual(keychain.synchronizable, false)
@@ -1261,7 +1261,7 @@ class KeychainAccessTests: XCTestCase {
 
     // MARK:
 
-    func testAllKeys() {
+    func testAllKeys() throws {
         do {
             let keychain = Keychain()
             keychain["key1"] = "value1"
@@ -1327,12 +1327,12 @@ class KeychainAccessTests: XCTestCase {
         }
         do {
             let keychain = Keychain(service: "service1")
-            try! keychain
+            try keychain
                 .synchronizable(true)
                 .accessibility(.whenUnlockedThisDeviceOnly)
                 .set("service1_value1", key: "service1_key1")
 
-            try! keychain
+            try keychain
                 .synchronizable(false)
                 .accessibility(.afterFirstUnlockThisDeviceOnly)
                 .set("service1_value2", key: "service1_key2")
@@ -1382,12 +1382,12 @@ class KeychainAccessTests: XCTestCase {
         }
         do {
             let keychain = Keychain(server: "https://google.com", protocolType: .https)
-            try! keychain
+            try keychain
                 .synchronizable(false)
                 .accessibility(.afterFirstUnlockThisDeviceOnly)
                 .set("google.com_value1", key: "google.com_key1")
 
-            try! keychain
+            try keychain
                 .synchronizable(true)
                 .accessibility(.afterFirstUnlock)
                 .set("google.com_value2", key: "google.com_key2")
@@ -1475,7 +1475,7 @@ class KeychainAccessTests: XCTestCase {
         #endif
     }
 
-    func testDescription() {
+    func testDescription() throws {
         do {
             let keychain = Keychain()
 
@@ -1486,7 +1486,7 @@ class KeychainAccessTests: XCTestCase {
 
     // MARK:
 
-    func testAuthenticationPolicy() {
+    func testAuthenticationPolicy() throws {
         do {
             let accessibility: Accessibility = .whenPasscodeSetThisDeviceOnly
 
@@ -1709,119 +1709,119 @@ class KeychainAccessTests: XCTestCase {
         #endif
     }
 
-    func testIgnoringAttributeSynchronizable() {
+    func testIgnoringAttributeSynchronizable() throws {
         let keychain = Keychain(service: "Twitter").synchronizable(false)
         let keychainSynchronizable = Keychain(service: "Twitter").synchronizable(true)
 
-        XCTAssertNil(try! keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
-        XCTAssertNil(try! keychain.get("password", ignoringAttributeSynchronizable: false), "not stored password")
-        XCTAssertNil(try! keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "not stored username")
-        XCTAssertNil(try! keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "not stored password")
+        XCTAssertNil(try keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
+        XCTAssertNil(try keychain.get("password", ignoringAttributeSynchronizable: false), "not stored password")
+        XCTAssertNil(try keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "not stored username")
+        XCTAssertNil(try keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "not stored password")
 
         do { try keychain.set("carol", key: "username", ignoringAttributeSynchronizable: false) } catch {}
         do { try keychainSynchronizable.set("carol_synchronizable", key: "username", ignoringAttributeSynchronizable: false) } catch {}
-        XCTAssertEqual(try! keychain.get("username", ignoringAttributeSynchronizable: false), "carol", "stored username")
-        XCTAssertEqual(try! keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "carol_synchronizable", "stored username")
-        XCTAssertNil(try! keychain.get("password", ignoringAttributeSynchronizable: false), "not stored password")
-        XCTAssertNil(try! keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "not stored password")
+        XCTAssertEqual(try keychain.get("username", ignoringAttributeSynchronizable: false), "carol", "stored username")
+        XCTAssertEqual(try keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "carol_synchronizable", "stored username")
+        XCTAssertNil(try keychain.get("password", ignoringAttributeSynchronizable: false), "not stored password")
+        XCTAssertNil(try keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "not stored password")
 
         do { try keychain.set("password1234", key: "password", ignoringAttributeSynchronizable: false) } catch {}
         do { try keychainSynchronizable.set("password1234_synchronizable", key: "password", ignoringAttributeSynchronizable: false) } catch {}
-        XCTAssertEqual(try! keychain.get("username", ignoringAttributeSynchronizable: false), "carol", "stored username")
-        XCTAssertEqual(try! keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "carol_synchronizable", "stored username")
-        XCTAssertEqual(try! keychain.get("password", ignoringAttributeSynchronizable: false), "password1234", "stored password")
-        XCTAssertEqual(try! keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "password1234_synchronizable", "stored password")
+        XCTAssertEqual(try keychain.get("username", ignoringAttributeSynchronizable: false), "carol", "stored username")
+        XCTAssertEqual(try keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "carol_synchronizable", "stored username")
+        XCTAssertEqual(try keychain.get("password", ignoringAttributeSynchronizable: false), "password1234", "stored password")
+        XCTAssertEqual(try keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "password1234_synchronizable", "stored password")
 
         do { try keychain.remove("username", ignoringAttributeSynchronizable: false) } catch {}
-        XCTAssertNil(try! keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
-        XCTAssertEqual(try! keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "carol_synchronizable", "stored username")
+        XCTAssertNil(try keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
+        XCTAssertEqual(try keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "carol_synchronizable", "stored username")
 
         do { try keychainSynchronizable.remove("username", ignoringAttributeSynchronizable: false) } catch {}
-        XCTAssertNil(try! keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
-        XCTAssertNil(try! keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "not stored username")
+        XCTAssertNil(try keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
+        XCTAssertNil(try keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "not stored username")
         
-        XCTAssertEqual(try! keychain.get("password", ignoringAttributeSynchronizable: false), "password1234", "stored password")
-        XCTAssertEqual(try! keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "password1234_synchronizable", "stored password")
+        XCTAssertEqual(try keychain.get("password", ignoringAttributeSynchronizable: false), "password1234", "stored password")
+        XCTAssertEqual(try keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "password1234_synchronizable", "stored password")
 
         do { try keychain.removeAll() } catch {}
-        XCTAssertNil(try! keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
-        XCTAssertNil(try! keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "not stored username")
-        XCTAssertNil(try! keychain.get("password", ignoringAttributeSynchronizable: false), "not stored password")
-        XCTAssertNil(try! keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "not stored password")
+        XCTAssertNil(try keychain.get("username", ignoringAttributeSynchronizable: false), "not stored username")
+        XCTAssertNil(try keychainSynchronizable.get("username", ignoringAttributeSynchronizable: false), "not stored username")
+        XCTAssertNil(try keychain.get("password", ignoringAttributeSynchronizable: false), "not stored password")
+        XCTAssertNil(try keychainSynchronizable.get("password", ignoringAttributeSynchronizable: false), "not stored password")
     }
 
-    func testIgnoringAttributeSynchronizableBackwardCompatibility() {
+    func testIgnoringAttributeSynchronizableBackwardCompatibility() throws {
         let keychain = Keychain(service: "Twitter").synchronizable(false)
         let keychainSynchronizable = Keychain(service: "Twitter").synchronizable(true)
 
-        XCTAssertNil(try! keychain.get("username"), "not stored username")
-        XCTAssertNil(try! keychain.get("password"), "not stored password")
-        XCTAssertNil(try! keychainSynchronizable.get("username"), "not stored username")
-        XCTAssertNil(try! keychainSynchronizable.get("password"), "not stored password")
+        XCTAssertNil(try keychain.get("username"), "not stored username")
+        XCTAssertNil(try keychain.get("password"), "not stored password")
+        XCTAssertNil(try keychainSynchronizable.get("username"), "not stored username")
+        XCTAssertNil(try keychainSynchronizable.get("password"), "not stored password")
 
         do { try keychain.set("carol", key: "username") } catch {}
-        XCTAssertEqual(try! keychain.get("username"), "carol", "stored username")
-        XCTAssertEqual(try! keychainSynchronizable.get("username"), "carol", "stored username")
+        XCTAssertEqual(try keychain.get("username"), "carol", "stored username")
+        XCTAssertEqual(try keychainSynchronizable.get("username"), "carol", "stored username")
 
         do { try keychainSynchronizable.set("carol_synchronizable", key: "username") } catch {}
-        XCTAssertEqual(try! keychain.get("username"), "carol_synchronizable", "stored username")
-        XCTAssertEqual(try! keychainSynchronizable.get("username"), "carol_synchronizable", "stored username")
-        XCTAssertNil(try! keychain.get("password"), "not stored password")
-        XCTAssertNil(try! keychainSynchronizable.get("password"), "not stored password")
+        XCTAssertEqual(try keychain.get("username"), "carol_synchronizable", "stored username")
+        XCTAssertEqual(try keychainSynchronizable.get("username"), "carol_synchronizable", "stored username")
+        XCTAssertNil(try keychain.get("password"), "not stored password")
+        XCTAssertNil(try keychainSynchronizable.get("password"), "not stored password")
 
         do { try keychain.set("password1234", key: "password") } catch {}
-        XCTAssertEqual(try! keychain.get("password"), "password1234", "stored password")
-        XCTAssertEqual(try! keychainSynchronizable.get("password"), "password1234", "stored password")
+        XCTAssertEqual(try keychain.get("password"), "password1234", "stored password")
+        XCTAssertEqual(try keychainSynchronizable.get("password"), "password1234", "stored password")
 
         do { try keychainSynchronizable.set("password1234_synchronizable", key: "password") } catch {}
-        XCTAssertEqual(try! keychain.get("username"), "carol_synchronizable", "stored username")
-        XCTAssertEqual(try! keychainSynchronizable.get("username"), "carol_synchronizable", "stored username")
-        XCTAssertEqual(try! keychain.get("password"), "password1234_synchronizable", "stored password")
-        XCTAssertEqual(try! keychainSynchronizable.get("password"), "password1234_synchronizable", "stored password")
+        XCTAssertEqual(try keychain.get("username"), "carol_synchronizable", "stored username")
+        XCTAssertEqual(try keychainSynchronizable.get("username"), "carol_synchronizable", "stored username")
+        XCTAssertEqual(try keychain.get("password"), "password1234_synchronizable", "stored password")
+        XCTAssertEqual(try keychainSynchronizable.get("password"), "password1234_synchronizable", "stored password")
 
         do { try keychain.remove("username") } catch {}
-        XCTAssertNil(try! keychain.get("username"), "not stored username")
-        XCTAssertNil(try! keychainSynchronizable.get("username"), "not stored username")
-        XCTAssertEqual(try! keychain.get("password"), "password1234_synchronizable", "stored password")
-        XCTAssertEqual(try! keychainSynchronizable.get("password"), "password1234_synchronizable", "stored password")
+        XCTAssertNil(try keychain.get("username"), "not stored username")
+        XCTAssertNil(try keychainSynchronizable.get("username"), "not stored username")
+        XCTAssertEqual(try keychain.get("password"), "password1234_synchronizable", "stored password")
+        XCTAssertEqual(try keychainSynchronizable.get("password"), "password1234_synchronizable", "stored password")
 
         do { try keychain.removeAll() } catch {}
-        XCTAssertNil(try! keychain.get("username"), "not stored username")
-        XCTAssertNil(try! keychainSynchronizable.get("username"), "not stored username")
-        XCTAssertNil(try! keychain.get("password"), "not stored password")
-        XCTAssertNil(try! keychainSynchronizable.get("password"), "not stored password")
+        XCTAssertNil(try keychain.get("username"), "not stored username")
+        XCTAssertNil(try keychainSynchronizable.get("username"), "not stored username")
+        XCTAssertNil(try keychain.get("password"), "not stored password")
+        XCTAssertNil(try keychainSynchronizable.get("password"), "not stored password")
     }
 
-    func testUpdateIgnoringAttributeSynchronizable() {
+    func testUpdateIgnoringAttributeSynchronizable() throws {
         let keychain = Keychain(service: "Twitter").synchronizable(false)
         let keychainSynchronizable = Keychain(service: "Twitter").synchronizable(true)
 
-        try! keychain.set("local", key: "token", ignoringAttributeSynchronizable: false)
-        try! keychainSynchronizable.set("synchronizable", key: "token", ignoringAttributeSynchronizable: false)
+        try keychain.set("local", key: "token", ignoringAttributeSynchronizable: false)
+        try keychainSynchronizable.set("synchronizable", key: "token", ignoringAttributeSynchronizable: false)
 
         // Updating one copy must not touch the other one with the same key
-        try! keychainSynchronizable.set("synchronizable_updated", key: "token", ignoringAttributeSynchronizable: false)
-        XCTAssertEqual(try! keychain.get("token", ignoringAttributeSynchronizable: false), "local")
-        XCTAssertEqual(try! keychainSynchronizable.get("token", ignoringAttributeSynchronizable: false), "synchronizable_updated")
+        try keychainSynchronizable.set("synchronizable_updated", key: "token", ignoringAttributeSynchronizable: false)
+        XCTAssertEqual(try keychain.get("token", ignoringAttributeSynchronizable: false), "local")
+        XCTAssertEqual(try keychainSynchronizable.get("token", ignoringAttributeSynchronizable: false), "synchronizable_updated")
 
-        try! keychain.set("local_updated", key: "token", ignoringAttributeSynchronizable: false)
-        XCTAssertEqual(try! keychain.get("token", ignoringAttributeSynchronizable: false), "local_updated")
-        XCTAssertEqual(try! keychainSynchronizable.get("token", ignoringAttributeSynchronizable: false), "synchronizable_updated")
+        try keychain.set("local_updated", key: "token", ignoringAttributeSynchronizable: false)
+        XCTAssertEqual(try keychain.get("token", ignoringAttributeSynchronizable: false), "local_updated")
+        XCTAssertEqual(try keychainSynchronizable.get("token", ignoringAttributeSynchronizable: false), "synchronizable_updated")
     }
 
-    func testContainsIgnoringAttributeSynchronizable() {
+    func testContainsIgnoringAttributeSynchronizable() throws {
         let keychain = Keychain(service: "Twitter").synchronizable(false)
         let keychainSynchronizable = Keychain(service: "Twitter").synchronizable(true)
 
-        try! keychainSynchronizable.set("synchronizable", key: "token", ignoringAttributeSynchronizable: false)
+        try keychainSynchronizable.set("synchronizable", key: "token", ignoringAttributeSynchronizable: false)
 
-        XCTAssertTrue(try! keychain.contains("token"))
-        XCTAssertFalse(try! keychain.contains("token", ignoringAttributeSynchronizable: false))
-        XCTAssertTrue(try! keychainSynchronizable.contains("token", ignoringAttributeSynchronizable: false))
+        XCTAssertTrue(try keychain.contains("token"))
+        XCTAssertFalse(try keychain.contains("token", ignoringAttributeSynchronizable: false))
+        XCTAssertTrue(try keychainSynchronizable.contains("token", ignoringAttributeSynchronizable: false))
     }
 
-    func testAllItemsIncludesSynchronizableItems() {
-        try! Keychain(service: "Twitter").synchronizable(true).set("synchronizable", key: "token")
+    func testAllItemsIncludesSynchronizableItems() throws {
+        try Keychain(service: "Twitter").synchronizable(true).set("synchronizable", key: "token")
 
         let items = Keychain.allItems(.genericPassword).filter { $0["service"] as? String == "Twitter" }
         XCTAssertEqual(items.count, 1)
