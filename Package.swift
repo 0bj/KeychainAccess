@@ -20,7 +20,12 @@ let package = Package(
     targets: [
         .target(
             name: "KeychainAccess",
-            path: "Lib/KeychainAccess"
+            path: "Lib/KeychainAccess",
+            swiftSettings: [
+                .enableUpcomingFeature("ExistentialAny"),
+                .enableUpcomingFeature("InternalImportsByDefault"),
+                .enableUpcomingFeature("MemberImportVisibility")
+            ]
         )
     ]
 )

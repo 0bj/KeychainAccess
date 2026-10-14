@@ -5,11 +5,11 @@
 //  Licensed under the MIT License. See LICENSE for details.
 //
 
-import Foundation
-import Security
+public import Foundation
+public import Security
 import os
 #if os(iOS) || os(macOS)
-import LocalAuthentication
+public import LocalAuthentication
 #endif
 
 public let KeychainAccessErrorDomain = "io.github.0bj.KeychainAccess.error"
@@ -823,8 +823,8 @@ public final class Keychain: @unchecked Sendable {
   /// Maps an `OSStatus` to `Status`, or to an `NSOSStatusErrorDomain` error that keeps the original code
   /// when `Status` has no matching case.
   @discardableResult
-  fileprivate class func securityError(status: OSStatus) -> Error {
-    let error: Error
+  fileprivate class func securityError(status: OSStatus) -> any Error {
+    let error: any Error
     if let known = Status(rawValue: status) {
       error = known
     } else {
@@ -839,7 +839,7 @@ public final class Keychain: @unchecked Sendable {
   }
 
   @discardableResult
-  fileprivate func securityError(status: OSStatus) -> Error {
+  fileprivate func securityError(status: OSStatus) -> any Error {
     return type(of: self).securityError(status: status)
   }
 }
@@ -977,7 +977,7 @@ extension Options {
     return query
   }
 
-  func attributes(key: String?, value: Data) -> ([String: Any], Error?) {
+  func attributes(key: String?, value: Data) -> ([String: Any], (any Error)?) {
     var attributes: [String: Any]
 
     if key != nil {
@@ -1000,7 +1000,7 @@ extension Options {
       var error: Unmanaged<CFError>?
       guard let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue as CFTypeRef, SecAccessControlCreateFlags(rawValue: CFOptionFlags(policy.rawValue)), &error) else {
         if let error = error?.takeRetainedValue() {
-          return (attributes, error as Error)
+          return (attributes, error as any Error)
         }
 
         return (attributes, Status.unexpectedError)
