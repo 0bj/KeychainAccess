@@ -76,10 +76,10 @@ keychain["alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 keychain[string: "alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
-##### for NSData
+##### for Data
 
 ```swift
-keychain[data: "secret"] = NSData(contentsOfFile: "secret.bin")
+keychain[data: "secret"] = try? Data(contentsOf: URL(fileURLWithPath: "secret.bin"))
 ```
 
 #### set method
@@ -103,7 +103,7 @@ catch let error {
 
 #### subscripting
 
-##### for String (If the value is NSData, attempt to convert to String)
+##### for String (If the value is Data, attempt to convert to String)
 
 ```swift
 let token = keychain["alice"]
@@ -113,7 +113,7 @@ let token = keychain["alice"]
 let token = keychain[string: "alice"]
 ```
 
-##### for NSData
+##### for Data
 
 ```swift
 let secretData = keychain[data: "secret"]
@@ -131,7 +131,7 @@ let token = try? keychain.get("alice")
 let token = try? keychain.getString("alice")
 ```
 
-##### as NSData
+##### as Data
 
 ```swift
 let data = try? keychain.getData("alice")
@@ -329,7 +329,7 @@ let keychain = Keychain(service: "com.example.github-token")
 
 DispatchQueue.global().async {
     do {
-        // Should be the secret invalidated when passcode is removed? If not then use `.WhenUnlocked`
+        // Should be the secret invalidated when passcode is removed? If not then use `.whenUnlocked`
         try keychain
             .accessibility(.whenPasscodeSetThisDeviceOnly, authenticationPolicy: [.biometryAny])
             .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
@@ -346,18 +346,23 @@ The same way as when adding.
 **Do not run in the main thread if there is a possibility that the item you are trying to add already exists, and protected.**
 **Because updating protected items requires authentication.**
 
-Additionally, you want to show custom authentication prompt message when updating, specify an `authenticationPrompt` attribute.
-If the item not protected, the `authenticationPrompt` parameter just be ignored.
+Additionally, if you want to show a custom authentication prompt message when updating, pass an `LAContext` with `localizedReason` set.
+If the item is not protected, the context is just ignored.
 
 ```swift
+import LocalAuthentication
+
 let keychain = Keychain(service: "com.example.github-token")
 
 DispatchQueue.global().async {
     do {
-        // Should be the secret invalidated when passcode is removed? If not then use `.WhenUnlocked`
+        let context = LAContext()
+        context.localizedReason = "Authenticate to update your access token"
+
+        // Should be the secret invalidated when passcode is removed? If not then use `.whenUnlocked`
         try keychain
             .accessibility(.whenPasscodeSetThisDeviceOnly, authenticationPolicy: [.biometryAny])
-            .authenticationPrompt("Authenticate to update your access token")
+            .authenticationContext(context)
             .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
     } catch let error {
         // Error handling if needed...
@@ -368,16 +373,21 @@ DispatchQueue.global().async {
 #### :closed_lock_with_key: Obtaining a Touch ID (Face ID) protected item
 
 The same way as when you get a normal item. It will be displayed automatically Touch ID or passcode authentication If the item you try to get is protected.  
-If you want to show custom authentication prompt message, specify an `authenticationPrompt` attribute.
-If the item not protected, the `authenticationPrompt` parameter just be ignored.
+If you want to show a custom authentication prompt message, pass an `LAContext` with `localizedReason` set.
+If the item is not protected, the context is just ignored.
 
 ```swift
+import LocalAuthentication
+
 let keychain = Keychain(service: "com.example.github-token")
 
 DispatchQueue.global().async {
     do {
+        let context = LAContext()
+        context.localizedReason = "Authenticate to login to server"
+
         let password = try keychain
-            .authenticationPrompt("Authenticate to login to server")
+            .authenticationContext(context)
             .get("alice")
 
         print("password: \(password)")
@@ -414,9 +424,9 @@ print("\(keychain)")
 ```
 =>
 [
-  [authenticationType: default, key: alice, server: github.com, class: internetPassword, protocol: https]
-  [authenticationType: default, key: hirohamada, server: github.com, class: internetPassword, protocol: https]
-  [authenticationType: default, key: honeylemon, server: github.com, class: internetPassword, protocol: https]
+  ["authenticationType": "Default", "class": "InternetPassword", "key": "alice", "protocol": "HTTPS", "server": "github.com", "synchronizable": "false"]
+  ["authenticationType": "Default", "class": "InternetPassword", "key": "hirohamada", "protocol": "HTTPS", "server": "github.com", "synchronizable": "false"]
+  ["authenticationType": "Default", "class": "InternetPassword", "key": "honeylemon", "protocol": "HTTPS", "server": "github.com", "synchronizable": "false"]
 ]
 ```
 
@@ -451,40 +461,32 @@ for item in items {
 
 ```
 =>
-item: [authenticationType: Default, key: alice, server: github.com, class: InternetPassword, protocol: https]
-item: [authenticationType: Default, key: hirohamada, server: github.com, class: InternetPassword, protocol: https]
-item: [authenticationType: Default, key: honeylemon, server: github.com, class: InternetPassword, protocol: https]
+item: ["authenticationType": "Default", "class": "InternetPassword", "key": "alice", "protocol": "HTTPS", "server": "github.com", "synchronizable": "false"]
+item: ["authenticationType": "Default", "class": "InternetPassword", "key": "hirohamada", "protocol": "HTTPS", "server": "github.com", "synchronizable": "false"]
+item: ["authenticationType": "Default", "class": "InternetPassword", "key": "honeylemon", "protocol": "HTTPS", "server": "github.com", "synchronizable": "false"]
 ```
 
 ## Keychain sharing capability
 
-If you encounter the error below, you need to add an `Keychain.entitlements`.
+If you encounter the error below, add the **Keychain Sharing** capability to your target (*Signing & Capabilities → + Capability → Keychain Sharing*).
 
 ```
 OSStatus error:[-34018] Internal error when a required entitlement isn't present, client has neither application-identifier nor keychain-access-groups entitlements.
 ```
 
-<img alt="Screen Shot 2019-10-27 at 8 08 50" src="https://user-images.githubusercontent.com/40610/67627108-1a7f2f80-f891-11e9-97bc-7f7313cb63d1.png" width="500">
-
-<img src="https://user-images.githubusercontent.com/40610/67627072-333b1580-f890-11e9-9feb-bf507abc2724.png" width="500" />
+<img src=".github/images/keychain-sharing.png" width="500" />
 
 ## Requirements
 
-|            | OS                                                         | Swift              |
-| ---------- | ---------------------------------------------------------- | ------------------ |
-| **v1.1.x** | iOS 7+, macOS 10.9+                                        | 1.1                |
-| **v1.2.x** | iOS 7+, macOS 10.9+                                        | 1.2                |
-| **v2.0.x** | iOS 7+, macOS 10.9+, watchOS 2+                            | 2.0                |
-| **v2.1.x** | iOS 7+, macOS 10.9+, watchOS 2+                            | 2.0                |
-| **v2.2.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 2.0, 2.1           |
-| **v2.3.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 2.0, 2.1, 2.2      |
-| **v2.4.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 2.2, 2.3           |
-| **v3.0.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 3.x                |
-| **v3.1.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 4.0, 4.1, 4.2      |
-| **v3.2.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 4.0, 4.1, 4.2, 5.0 |
-| **v4.0.x** | iOS 8+, macOS 10.9+, watchOS 2+, tvOS 9+                   | 4.0, 4.1, 4.2, 5.1 |
-| **v4.1.x** | iOS 8+, macOS 10.9+, watchOS 3+, tvOS 9+, Mac Catalyst 13+ | 4.0, 4.1, 4.2, 5.1 |
-| **v5.0.x** | iOS 16+, macOS 15+, watchOS 10+, tvOS 16+, Mac Catalyst    | 6.x                |
+| Platform     | Minimum version |
+| ------------ | --------------- |
+| iOS          | 16.0            |
+| macOS        | 15.0            |
+| Mac Catalyst | 16.0            |
+| tvOS         | 16.0            |
+| watchOS      | 10.0            |
+
+Swift 6, Xcode 26 or later.
 
 > Since v5.0.0 Shared Web Credentials API (`getSharedPassword`, `setSharedPassword`, `removeSharedPassword`, `requestSharedWebCredential`, `generatePassword`) has been removed. Use `ASAuthorizationController` with `ASAuthorizationPasswordRequest` (AuthenticationServices) instead.
 
@@ -492,13 +494,11 @@ OSStatus error:[-34018] Internal error when a required entitlement isn't present
 
 ### Swift Package Manager
 
-KeychainAccess is also available through [Swift Package Manager](https://github.com/apple/swift-package-manager/).
+KeychainAccess is available through [Swift Package Manager](https://github.com/apple/swift-package-manager/).
 
 #### Xcode
 
-Select `File > Add Packages... > Add Package Dependency...`,
-
-<img src="https://user-images.githubusercontent.com/40610/67627000-2833b580-f88f-11e9-89ef-18819b1a6c67.png" width="800px" />
+Select `File > Add Package Dependencies…` and enter `https://github.com/0bj/KeychainAccess.git`.
 
 #### CLI
 

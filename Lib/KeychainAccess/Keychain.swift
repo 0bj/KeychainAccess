@@ -118,34 +118,6 @@ public enum Accessibility: Sendable {
   case afterFirstUnlockThisDeviceOnly
 }
 
-/**
- Predefined item attribute constants used to get or set values
- in a dictionary. The kSecUseAuthenticationUI constant is the key and its
- value is one of the constants defined here.
- If the key kSecUseAuthenticationUI not provided then kSecUseAuthenticationUIAllow
- is used as default.
- */
-public enum AuthenticationUI: Sendable {
-  /**
-   Specifies that authenticate UI can appear.
-   */
-  case allow
-
-  /**
-   Specifies that the error
-   errSecInteractionNotAllowed will be returned if an item needs
-   to authenticate with UI
-   */
-  case fail
-
-  /**
-   Specifies that all items which need
-   to authenticate with UI will be silently skipped. This value can be used
-   only with SecItemCopyMatching.
-   */
-  case skip
-}
-
 public struct AuthenticationPolicy: Sendable, OptionSet {
   /**
    User presence policy using Touch ID or Passcode. Touch ID does not
@@ -547,7 +519,7 @@ public final class Keychain: @unchecked Sendable {
     var status = SecItemCopyMatching(query as CFDictionary, nil)
     switch status {
     case errSecSuccess, errSecInteractionNotAllowed:
-      var query = options.query()
+      var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
       query[cf.AttributeAccount] = key
 
       var (attributes, error) = options.attributes(key: nil, value: value)
@@ -656,8 +628,8 @@ public final class Keychain: @unchecked Sendable {
 
   // MARK:
 
-  public func contains(_ key: String) throws -> Bool {
-    var query = options.query()
+  public func contains(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> Bool {
+    var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.AttributeAccount] = key
 
     let status = SecItemCopyMatching(query as CFDictionary, nil)
