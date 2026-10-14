@@ -219,12 +219,9 @@ public final class Keychain: @unchecked Sendable {
 
   /// Returns the data stored for `key`, or `nil` if there is none.
   public func getData(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> Data? {
-    var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
-
+    var query = itemQuery(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.MatchLimit] = cf.MatchLimitOne
     query[cf.ReturnData] = kCFBooleanTrue
-
-    query[cf.AttributeAccount] = key
 
     var result: AnyObject?
     let status = SecItemCopyMatching(query as CFDictionary, &result)
@@ -244,16 +241,12 @@ public final class Keychain: @unchecked Sendable {
 
   /// Reads the item for `key` with all its attributes and returns `handler`'s result (`nil` attributes if there is no item).
   public func get<T>(_ key: String, ignoringAttributeSynchronizable: Bool = true, handler: (Attributes?) -> T) throws -> T {
-    var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
-
+    var query = itemQuery(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
     query[cf.MatchLimit] = cf.MatchLimitOne
-
     query[cf.ReturnData] = kCFBooleanTrue
     query[cf.ReturnAttributes] = kCFBooleanTrue
     query[cf.ReturnRef] = kCFBooleanTrue
     query[cf.ReturnPersistentRef] = kCFBooleanTrue
-
-    query[cf.AttributeAccount] = key
 
     var result: AnyObject?
     let status = SecItemCopyMatching(query as CFDictionary, &result)
@@ -283,8 +276,7 @@ public final class Keychain: @unchecked Sendable {
 
   /// Stores `value` for `key`, adding or updating the item.
   public func set(_ value: Data, key: String, ignoringAttributeSynchronizable: Bool = true) throws {
-    var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
-    query[cf.AttributeAccount] = key
+    let query = itemQuery(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
 
     let status = SecItemCopyMatching(query as CFDictionary, nil)
     switch status {
@@ -351,8 +343,7 @@ public final class Keychain: @unchecked Sendable {
 
   /// Removes the item for `key`. Does nothing if there is none.
   public func remove(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws {
-    var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
-    query[cf.AttributeAccount] = key
+    let query = itemQuery(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
 
     let status = SecItemDelete(query as CFDictionary)
     if status != errSecSuccess && status != errSecItemNotFound {
@@ -380,8 +371,7 @@ public final class Keychain: @unchecked Sendable {
   /// Throws `Status.interactionNotAllowed` when the keychain can't be queried right now
   /// (for example, the device is locked), instead of reporting the item as missing.
   public func contains(_ key: String, ignoringAttributeSynchronizable: Bool = true) throws -> Bool {
-    var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
-    query[cf.AttributeAccount] = key
+    let query = itemQuery(key, ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
 
     let status = SecItemCopyMatching(query as CFDictionary, nil)
     switch status {
@@ -538,6 +528,13 @@ public final class Keychain: @unchecked Sendable {
   @discardableResult
   fileprivate func securityError(status: OSStatus) -> any Error {
     type(of: self).securityError(status: status)
+  }
+
+  /// Query matching the item stored for `key`.
+  fileprivate func itemQuery(_ key: String, ignoringAttributeSynchronizable: Bool) -> [String: Any] {
+    var query = options.query(ignoringAttributeSynchronizable: ignoringAttributeSynchronizable)
+    query[cf.AttributeAccount] = key
+    return query
   }
 
   fileprivate func check(_ status: OSStatus) throws {
