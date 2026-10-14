@@ -8,7 +8,7 @@ PRODUCT_NAME = $(TARGET_NAME);
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 ASSETCATALOG_COMPILER_APPICON_NAME[sdk=appletv*] = ;
 
-PRODUCT_BUNDLE_IDENTIFIER = com.kishikawakatsumi.KeychainAccess.TestHost;
+PRODUCT_BUNDLE_IDENTIFIER = io.github.0bj.KeychainAccess.TestHost;
 
 // Keychain tests need a signed host. Set DEVELOPMENT_TEAM in Local.xcconfig (see Base.xcconfig).
 CODE_SIGN_ENTITLEMENTS = TestHost/TestHost.entitlements;

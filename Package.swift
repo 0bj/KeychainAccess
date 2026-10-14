@@ -1,10 +1,10 @@
 // swift-tools-version:6.2
 
+//
 //  Package.swift
 //  KeychainAccess
 //
-//  Created by kishikawa katsumi on 2015/12/4.
-//  Copyright (c) 2015 kishikawa katsumi. All rights reserved.
+//  Licensed under the MIT License. See LICENSE for details.
 //
 
 import PackageDescription

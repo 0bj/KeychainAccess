@@ -4,8 +4,7 @@
 
 KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and macOS. Makes using Keychain APIs extremely easy and much more palatable to use in Swift.
 
-<img src="https://github.com/kishikawakatsumi/KeychainAccess/assets/40610/4de4aae1-6fc1-4477-af6d-afbe6d164da0" width="320px" /> <img src="https://github.com/kishikawakatsumi/KeychainAccess/assets/40610/2980ea84-862b-4067-b9b7-90de629171b9" width="320px" />
-<img src="https://github.com/kishikawakatsumi/KeychainAccess/assets/40610/3299347d-eb1b-446c-921c-778fa493f818" width="320px" />
+<img src=".github/images/touch-id.png" width="320px" />
 
 ## :bulb: Features
 
@@ -23,7 +22,7 @@ KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and macO
 
 ##### :eyes: See also:
 
-- [:link: iOS Example Project](https://github.com/kishikawakatsumi/KeychainAccess/tree/master/Examples/Example-iOS)
+- [:link: iOS Example Project](Examples/Example-iOS)
 
 ### :key: Basics
 
@@ -31,14 +30,14 @@ KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and macO
 
 ```swift
 let keychain = Keychain(service: "com.example.github-token")
-keychain["kishikawakatsumi"] = "01234567-89ab-cdef-0123-456789abcdef"
+keychain["alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
 #### Saving Internet Password
 
 ```swift
 let keychain = Keychain(server: "https://github.com", protocolType: .https)
-keychain["kishikawakatsumi"] = "01234567-89ab-cdef-0123-456789abcdef"
+keychain["alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
 ### :key: Instantiation
@@ -70,11 +69,11 @@ let keychain = Keychain(server: "https://github.com", protocolType: .https, auth
 ##### for String
 
 ```swift
-keychain["kishikawakatsumi"] = "01234567-89ab-cdef-0123-456789abcdef"
+keychain["alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
 ```swift
-keychain[string: "kishikawakatsumi"] = "01234567-89ab-cdef-0123-456789abcdef"
+keychain[string: "alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
 ##### for NSData
@@ -86,14 +85,14 @@ keychain[data: "secret"] = NSData(contentsOfFile: "secret.bin")
 #### set method
 
 ```swift
-keychain.set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+keychain.set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
 ```
 
 #### error handling
 
 ```swift
 do {
-    try keychain.set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+    try keychain.set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
 }
 catch let error {
     print(error)
@@ -107,11 +106,11 @@ catch let error {
 ##### for String (If the value is NSData, attempt to convert to String)
 
 ```swift
-let token = keychain["kishikawakatsumi"]
+let token = keychain["alice"]
 ```
 
 ```swift
-let token = keychain[string: "kishikawakatsumi"]
+let token = keychain[string: "alice"]
 ```
 
 ##### for NSData
@@ -125,17 +124,17 @@ let secretData = keychain[data: "secret"]
 ##### as String
 
 ```swift
-let token = try? keychain.get("kishikawakatsumi")
+let token = try? keychain.get("alice")
 ```
 
 ```swift
-let token = try? keychain.getString("kishikawakatsumi")
+let token = try? keychain.getString("alice")
 ```
 
 ##### as NSData
 
 ```swift
-let data = try? keychain.getData("kishikawakatsumi")
+let data = try? keychain.getData("alice")
 ```
 
 ### :key: Removing an item
@@ -143,14 +142,14 @@ let data = try? keychain.getData("kishikawakatsumi")
 #### subscripting
 
 ```swift
-keychain["kishikawakatsumi"] = nil
+keychain["alice"] = nil
 ```
 
 #### remove method
 
 ```swift
 do {
-    try keychain.remove("kishikawakatsumi")
+    try keychain.remove("alice")
 } catch let error {
     print("error: \(error)")
 }
@@ -162,9 +161,9 @@ do {
 let keychain = Keychain(server: "https://github.com", protocolType: .https)
 do {
     try keychain
-        .label("github.com (kishikawakatsumi)")
+        .label("github.com (alice)")
         .comment("github access token")
-        .set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+        .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
 } catch let error {
     print("error: \(error)")
 }
@@ -176,7 +175,7 @@ do {
 
 ```swift
 let keychain = Keychain()
-let persistentRef = keychain[attributes: "kishikawakatsumi"]?.persistentRef
+let persistentRef = keychain[attributes: "alice"]?.persistentRef
 ...
 ```
 
@@ -184,7 +183,7 @@ let persistentRef = keychain[attributes: "kishikawakatsumi"]?.persistentRef
 
 ```swift
 let keychain = Keychain()
-let creationDate = keychain[attributes: "kishikawakatsumi"]?.creationDate
+let creationDate = keychain[attributes: "alice"]?.creationDate
 ...
 ```
 
@@ -193,7 +192,7 @@ let creationDate = keychain[attributes: "kishikawakatsumi"]?.creationDate
 ```swift
 let keychain = Keychain()
 do {
-    let attributes = try keychain.get("kishikawakatsumi") { $0 }
+    let attributes = try keychain.get("alice") { $0 }
     print(attributes?.comment)
     print(attributes?.label)
     print(attributes?.creator)
@@ -207,7 +206,7 @@ do {
 
 ```swift
 let keychain = Keychain()
-if let attributes = keychain[attributes: "kishikawakatsumi"] {
+if let attributes = keychain[attributes: "alice"] {
     print(attributes.comment)
     print(attributes.label)
     print(attributes.creator)
@@ -220,7 +219,7 @@ if let attributes = keychain[attributes: "kishikawakatsumi"] {
 
 ```swift
 let keychain = Keychain(service: "com.example.github-token")
-    .label("github.com (kishikawakatsumi)")
+    .label("github.com (alice)")
     .synchronizable(true)
     .accessibility(.afterFirstUnlock)
 ```
@@ -241,7 +240,7 @@ let keychain = Keychain(service: "com.example.github-token")
 let keychain = Keychain(service: "com.example.github-token")
     .accessibility(.afterFirstUnlock)
 
-keychain["kishikawakatsumi"] = "01234567-89ab-cdef-0123-456789abcdef"
+keychain["alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
 ###### One-shot
@@ -252,7 +251,7 @@ let keychain = Keychain(service: "com.example.github-token")
 do {
     try keychain
         .accessibility(.afterFirstUnlock)
-        .set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+        .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
 } catch let error {
     print("error: \(error)")
 }
@@ -266,7 +265,7 @@ do {
 let keychain = Keychain(service: "com.example.github-token")
     .accessibility(.whenUnlocked)
 
-keychain["kishikawakatsumi"] = "01234567-89ab-cdef-0123-456789abcdef"
+keychain["alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
 ###### One-shot
@@ -277,7 +276,7 @@ let keychain = Keychain(service: "com.example.github-token")
 do {
     try keychain
         .accessibility(.whenUnlocked)
-        .set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+        .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
 } catch let error {
     print("error: \(error)")
 }
@@ -297,7 +296,7 @@ let keychain = Keychain(service: "com.example.github-token", accessGroup: "12ABC
 let keychain = Keychain(service: "com.example.github-token")
     .synchronizable(true)
 
-keychain["kishikawakatsumi"] = "01234567-89ab-cdef-0123-456789abcdef"
+keychain["alice"] = "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
 ###### One-shot
@@ -308,7 +307,7 @@ let keychain = Keychain(service: "com.example.github-token")
 do {
     try keychain
         .synchronizable(true)
-        .set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+        .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
 } catch let error {
     print("error: \(error)")
 }
@@ -333,7 +332,7 @@ DispatchQueue.global().async {
         // Should be the secret invalidated when passcode is removed? If not then use `.WhenUnlocked`
         try keychain
             .accessibility(.whenPasscodeSetThisDeviceOnly, authenticationPolicy: [.biometryAny])
-            .set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+            .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
     } catch let error {
         // Error handling if needed...
     }
@@ -359,7 +358,7 @@ DispatchQueue.global().async {
         try keychain
             .accessibility(.whenPasscodeSetThisDeviceOnly, authenticationPolicy: [.biometryAny])
             .authenticationPrompt("Authenticate to update your access token")
-            .set("01234567-89ab-cdef-0123-456789abcdef", key: "kishikawakatsumi")
+            .set("01234567-89ab-cdef-0123-456789abcdef", key: "alice")
     } catch let error {
         // Error handling if needed...
     }
@@ -379,7 +378,7 @@ DispatchQueue.global().async {
     do {
         let password = try keychain
             .authenticationPrompt("Authenticate to login to server")
-            .get("kishikawakatsumi")
+            .get("alice")
 
         print("password: \(password)")
     } catch let error {
@@ -397,7 +396,7 @@ There is no way to show Touch ID or passcode authentication when removing Keycha
 let keychain = Keychain(service: "com.example.github-token")
 
 do {
-    try keychain.remove("kishikawakatsumi")
+    try keychain.remove("alice")
 } catch let error {
     // Error handling if needed...
 }
@@ -415,7 +414,7 @@ print("\(keychain)")
 ```
 =>
 [
-  [authenticationType: default, key: kishikawakatsumi, server: github.com, class: internetPassword, protocol: https]
+  [authenticationType: default, key: alice, server: github.com, class: internetPassword, protocol: https]
   [authenticationType: default, key: hirohamada, server: github.com, class: internetPassword, protocol: https]
   [authenticationType: default, key: honeylemon, server: github.com, class: internetPassword, protocol: https]
 ]
@@ -434,7 +433,7 @@ for key in keys {
 
 ```
 =>
-key: kishikawakatsumi
+key: alice
 key: hirohamada
 key: honeylemon
 ```
@@ -452,7 +451,7 @@ for item in items {
 
 ```
 =>
-item: [authenticationType: Default, key: kishikawakatsumi, server: github.com, class: InternetPassword, protocol: https]
+item: [authenticationType: Default, key: alice, server: github.com, class: InternetPassword, protocol: https]
 item: [authenticationType: Default, key: hirohamada, server: github.com, class: InternetPassword, protocol: https]
 item: [authenticationType: Default, key: honeylemon, server: github.com, class: InternetPassword, protocol: https]
 ```
@@ -515,7 +514,7 @@ let package = Package(
         .library(name: "MyLibrary", targets: ["MyLibrary"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "5.0.0"),
+        .package(url: "https://github.com/0bj/KeychainAccess.git", from: "5.0.0"),
     ],
     targets: [
         .target(name: "MyLibrary", dependencies: ["KeychainAccess"]),
@@ -535,9 +534,9 @@ $ swift build
 2. Link `KeychainAccess.framework` with your target
 3. Add `Copy Files Build Phase` to include the framework to your application bundle
 
-_See [iOS Example Project](https://github.com/kishikawakatsumi/KeychainAccess/tree/master/Examples/Example-iOS) as reference._
+_See [iOS Example Project](Examples/Example-iOS) as reference._
 
-<img src="https://github.com/kishikawakatsumi/KeychainAccess/assets/40610/b7a46cfb-714d-47d5-84ea-6a80f640e03d" width="800px" />
+<img src=".github/images/manual-install.png" width="800px" />
 
 ## Development
 
@@ -551,7 +550,9 @@ Then run the `KeychainAccessTests` scheme. Access groups used by the tests are r
 
 ## Author
 
-kishikawa katsumi, kishikawakatsumi@mac.com
+Sergey Nikolaev
+
+Based on [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) by kishikawa katsumi.
 
 ## License
 
